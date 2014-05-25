@@ -2,100 +2,15 @@
 
 @main("Welcome to Play") {
 
-<script language="javascript" type="text/javascript">
-
-  var wsUri = "ws://192.168.0.10:9000/mobileData";
-  var output;
-
-  function init()
-  {
-    output = document.getElementById("output");
-    testWebSocket();
-    extractData();
-  }
-
-  function extractData()
-  {
-
-      if(window.DeviceOrientationEvent) {
-
-          window.addEventListener('deviceorientation', function(event) {
-                var alpha;
-                //Check for iOS property
-                if(event.webkitCompassHeading) {
-                  alpha = event.webkitCompassHeading;
-                  //Rotation is reversed for iOS
-                  compass.style.WebkitTransform = 'rotate(-' + alpha + 'deg)';
-                }
-                //non iOS
-                else {
-                  alpha = event.alpha;
-                  webkitAlpha = alpha;
-                  if(!window.chrome) {
-                    //Assume Android stock (this is crude, but good enough for our example) and apply offset
-                    webkitAlpha = alpha-270;
-                  }
-                }
-
-                doSend({name: "Nexus 7", a: alpha});
-
-              }, false);
-        }
-  }
-
-  function testWebSocket()
-  {
-    websocket = new WebSocket(wsUri);
-    websocket.onopen = function(evt) { onOpen(evt) };
-    websocket.onclose = function(evt) { onClose(evt) };
-    websocket.onmessage = function(evt) { onMessage(evt) };
-    websocket.onerror = function(evt) { onError(evt) };
-  }
-
-  function onOpen(evt)
-  {
-    writeToScreen("CONNECTED");
-    doSend("WebSocket rocks");
-  }
-
-  function onClose(evt)
-  {
-    writeToScreen("DISCONNECTED");
-  }
-
-  function onMessage(evt)
-  {
-    writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data+'</span>');
-  }
-
-  function closeSocket() {
-    websocket.close();
-  }
-
-  function onError(evt)
-  {
-    writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
-  }
-
-  function doSend(message)
-  {
-    writeToScreen("SENT: " + message);
-    websocket.send(message);
-  }
-
-  function writeToScreen(message)
-  {
-    var pre = document.createElement("p");
-    pre.style.wordWrap = "break-word";
-    pre.innerHTML = message;
-    output.appendChild(pre);
-  }
-
-  window.addEventListener("load", init, false);
-
-</script>
+<script src="@routes.Assets.at("javascripts/mobile-socket.js")" type="text/javascript"></script>
 
 <div id="output"></div>
-<input type="button" onclick="closeSocket()" name="Cancel" value="Cancel">
-<input type="button" onclick="doSend('hovno')" name="Cancel" value="Hovno">
+
+<div id="dataContainerOrientation">
+      No device orientation data
+</div>
+
+<input type="button" onclick="startSending()" name="starSending" value="Start">
+<input type="button" onclick="stopSending()" name="starSending" value="Stop">
+
 }
