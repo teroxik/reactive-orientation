@@ -1,11 +1,13 @@
 
   var wsUri = "ws://192.168.0.15:9000/mobileData";
-  var output;
+  var output,orientationContainer;
   var startOn = false;
 
   function init()
   {
     output = document.getElementById("output");
+    orientationContainer = document.getElementById("dataContainerOrientation");
+    dataGeolocation = document.getElementById("dataGeolocation");
     testWebSocket();
     extractData();
   }
@@ -99,6 +101,26 @@
   function stopSending() {
    startOn = false;
   }
+
+  function success(position) {
+    dataGeolocation.innerHTML = 'latitue: ' + position.coords.latitude + '<br/>longitued: ' + position.coords.longitude;
+  }
+
+  function error(msg) {
+    var s = document.querySelector('#status');
+    s.innerHTML = typeof msg == 'string' ? msg : "failed";
+    s.className = 'fail';
+
+    // console.log(arguments);
+  }
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(success, error);
+  } else {
+    error('not supported');
+  }
+
+
 
 
   window.addEventListener("load", init, false);
