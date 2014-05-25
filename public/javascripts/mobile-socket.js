@@ -1,5 +1,6 @@
+(function () {
+  var wsUri = "ws://192.168.0.10:9000/mobileWebSocket";
 
-  var wsUri = "ws://192.168.0.10:9000/mobileData";
   var output,orientationContainer;
   var startOn = false;
 
@@ -10,6 +11,9 @@
     dataGeolocation = document.getElementById("dataGeolocation");
     testWebSocket();
     extractData();
+
+    document.getElementById("startSendingBtn").addEventListener("click", startSending, false);
+    document.getElementById("stopSendingBtn").addEventListener("click", stopSending, false);
   }
 
   function extractData()
@@ -126,7 +130,5 @@
     error('not supported');
   }
 
-
-
-
   window.addEventListener("load", init, false);
+})();

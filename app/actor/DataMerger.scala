@@ -18,7 +18,7 @@ class DataMerger extends Actor {
 
   var devices = Set.empty[String]
   var consumers = Set.empty[String]
-  val (dataEnumerator,dataChannel) = Concurrent.broadcast[JsValue]
+  val (dataEnumerator, dataChannel) = Concurrent.broadcast[JsValue]
 
   def receive = {
     case RegisterProducer(device) => {
@@ -29,11 +29,9 @@ class DataMerger extends Actor {
       sender ! RegisterConsumerConfirmation(dataEnumerator)
     }
     case e: OrientationChangeEvent => {
-      println("Sending event to consumer")
       broadCastMessage(e)
     }
   }
 
   def broadCastMessage(event: OrientationChangeEvent) = dataChannel.push(Json.toJson(event))
-
 }
