@@ -14,7 +14,6 @@
 
   function extractData()
   {
-
       if(window.DeviceOrientationEvent) {
           window.addEventListener('deviceorientation', function(event) {
               if(startOn) {
@@ -39,7 +38,15 @@
                   if(alpha!=null || beta!=null || gamma!=null) {
                       dataContainerOrientation.innerHTML = 'alpha: ' + alpha + '<br/>beta: ' + beta + '<br />gamma: ' + gamma;
                   }
-                  doSend(JSON.stringify({device: "Nexus 7", alpha: alpha, beta: beta, gamma: gamma}));
+                  doSend(JSON.stringify({
+                                            device: "Nexus 7",
+                                            data: {
+                                                alpha: alpha,
+                                                beta: beta,
+                                                gamma: gamma
+                                            }
+                                         }
+                                     ));
               }
 
               }, false);
@@ -58,7 +65,6 @@
   function onOpen(evt)
   {
     writeToScreen("CONNECTED");
-    doSend("WebSocket rocks");
   }
 
   function onClose(evt)

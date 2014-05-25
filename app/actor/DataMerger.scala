@@ -4,6 +4,7 @@ import akka.actor.Actor
 import play.api.libs.json.{Json, JsValue}
 import play.api.libs.iteratee.{Enumerator, Concurrent}
 import actor.DataMerger.{RegisterConsumerConfirmation, OrientationChangeEvent, RegisterConsumer, RegisterProducer}
+import json.JsonFormats._
 
 object DataMerger {
   case class RegisterProducer(device: String)
@@ -33,9 +34,6 @@ class DataMerger extends Actor {
     }
   }
 
-  def broadCastMessage(event: OrientationChangeEvent): Unit = {
-    val msg = Json.obj()
-    dataChannel.push(msg);
-  }
+  def broadCastMessage(event: OrientationChangeEvent) = dataChannel.push(Json.toJson(event))
 
 }
