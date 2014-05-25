@@ -26,7 +26,11 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-  def mobileData = WebSocket.using[OrientationChangeEvent] { request =>
+  def dashboard = Action {
+    Ok(views.html.dashboard("Your new application is ready."))
+  }
+
+  def mobileWebSocket = WebSocket.using[OrientationChangeEvent] { request =>
 
     val device = request.path //TODO:
     mergingActor ! RegisterProducer(device)
@@ -43,7 +47,7 @@ object Application extends Controller {
     (in, out)
   }
 
-  def dashboard = WebSocket.async[JsValue] { request =>
+  def dashboardWebSocket = WebSocket.async[JsValue] { request =>
     implicit val timeout = Timeout(2 second)
 
     (mergingActor ? RegisterConsumer)
