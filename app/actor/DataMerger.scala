@@ -2,12 +2,16 @@ package actor
 
 import akka.actor.Actor
 import play.api.libs.json.{Json, JsValue}
-import play.api.libs.iteratee.Concurrent
+import play.api.libs.iteratee.{Enumerator, Concurrent}
+import actor.DataMerger.{RegisterConsumerConfirmation, OrientationChangeEvent, RegisterConsumer, RegisterProducer}
 
-case class RegisterProducer(username: String)
-case class RegisterConsumer(username: String)
-case class Data(username: String,data: String)
-
+object DataMerger {
+  case class RegisterProducer(device: String)
+  case class RegisterConsumerConfirmation(enumerator: Enumerator[JsValue])
+  case class RegisterConsumer(device: String)
+  case class OrientationChangeEvent(device: String, data: OrientationChangeData)
+  case class OrientationChangeData(alpha: Double, beta: Double, gamma: Double)
+}
 
 class DataMerger extends Actor {
 
@@ -15,22 +19,21 @@ class DataMerger extends Actor {
   var consumers = Set.empty[String]
   val (dataEnumerator,dataChannel) = Concurrent.broadcast[JsValue]
 
-
   def receive = {
-    case RegisterProducer(username) => {
-      devices = devices + username
+    case RegisterProducer(device) => {
+      devices = devices + device
     }
-    case RegisterConsumer(username) => {
-      consumers = consumers + username
-      sender ! dataEnumerator
+    case RegisterConsumer(device) => {
+      consumers = consumers + device
+      sender ! RegisterConsumerConfirmation(dataEnumerator)
     }
-    case Data(username, data) => {
-      broadCastMessage(username,data)
+    case e: OrientationChangeEvent => {
+      println("Sending event to consumer")
+      broadCastMessage(e)
     }
-
   }
 
-  def broadCastMessage(user:String, text:String): Unit = {
+  def broadCastMessage(event: OrientationChangeEvent): Unit = {
     val msg = Json.obj()
     dataChannel.push(msg);
   }
