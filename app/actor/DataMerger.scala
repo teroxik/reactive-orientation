@@ -29,11 +29,9 @@ class DataMerger extends Actor {
       sender ! RegisterConsumerConfirmation(dataEnumerator)
     }
     case e: OrientationChangeEvent => {
-      println("Sending event to consumer")
       broadCastMessage(e)
     }
   }
 
   def broadCastMessage(event: OrientationChangeEvent) = dataChannel.push(Json.toJson(event))
-
 }
