@@ -17,38 +17,42 @@ import scala.concurrent.duration._
 import scala.concurrent.ExecutionContext
 import ExecutionContext.Implicits.global
 import json.JsonFormats._
+import utils.IpAddress
+
 
 object Application extends Controller {
 
   lazy val mergingActor = Akka.system.actorOf(Props[DataMerger])
 
   def index = Action {
-    Ok(views.html.index("Your new application is ready."))
+    IpAddress.getIpAddreses().foreach(println(_))
+    Ok(views.html.index(""))
   }
 
   def mobileData = WebSocket.using[OrientationChangeEvent] { request =>
 
-    val device = request.path //TODO:
-    mergingActor ! RegisterProducer(device)
+      val device = request.path //TODO:
+      mergingActor ! RegisterProducer(device)
 
     val in = Iteratee
       .foreach[OrientationChangeEvent] { e =>
         mergingActor ! e
         println(e)
+
       }
       .map(_ => "Disconnected")
 
     val out = Enumerator.empty[OrientationChangeEvent]
 
-    (in, out)
+      (in, out)
   }
 
-  def dashboard = WebSocket.async[JsValue] { request =>
-    implicit val timeout = Timeout(2 second)
+  def dashboard = WebSocket.async[JsValue] {
+    request =>
+      implicit val timeout = Timeout(2 second)
 
     (mergingActor ? RegisterConsumer)
       .map { case RegisterConsumerConfirmation(en) =>  ( Iteratee.ignore[JsValue], en) }
   }
-
 
 }
