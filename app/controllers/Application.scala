@@ -26,7 +26,7 @@ object Application extends Controller {
 
   def index = Action {
     IpAddress.getIpAddreses().foreach(println(_))
-    Ok(views.html.index(""))
+    Ok(views.html.index())
   }
 
   def mobileData = WebSocket.using[OrientationChangeEvent] { request =>

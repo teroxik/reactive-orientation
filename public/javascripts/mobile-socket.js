@@ -1,5 +1,5 @@
 
-  var wsUri = "ws://192.168.0.15:9000/mobileData";
+  var wsUri = "ws://192.168.0.10:9000/mobileData";
   var output,orientationContainer;
   var startOn = false;
 
