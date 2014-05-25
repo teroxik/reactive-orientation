@@ -1,14 +1,22 @@
 package controllers
 
-import play.api._
 import play.api.mvc._
-import play.api.libs.concurrent.Execution.Implicits._
-import play.api.libs.iteratee.{Enumerator, Iteratee}
 import play.api.libs.concurrent.Akka
 import akka.actor.Props
 import actor._
 import play.api.libs.json.JsValue
-
+import actor.DataMerger._
+import play.api.libs.iteratee.{Enumerator, Iteratee}
+import akka.pattern.ask
+import actor.DataMerger.RegisterConsumer
+import actor.DataMerger.OrientationChangeEvent
+import actor.DataMerger.OrientationChangeData
+import actor.DataMerger.RegisterProducer
+import play.api.Play.current
+import akka.util.Timeout
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext
+import ExecutionContext.Implicits.global
 
 object Application extends Controller {
 
@@ -18,18 +26,33 @@ object Application extends Controller {
     Ok(views.html.index("Your new application is ready."))
   }
 
-  def mobileData = WebSocket.using[JsValue] { request =>
+  def mobileData = WebSocket.using[String] { request =>
 
-    mergingActor ! RegisterProducer()
+    val device = request.path //TODO:
+    mergingActor ! RegisterProducer(device)
 
+    val in = Iteratee
+      .foreach[String] { e =>
+        mergingActor ! OrientationChangeEvent(device, OrientationChangeData(1.0, 2.0, 3.0))
+        println(e)
+      }
+      .map(_ => "Disconnected")
+
+    val out = Enumerator.empty[String]
 
     (in, out)
   }
 
-  def dashboard = WebSocket.using[String] { request =>
+  def dashboard = WebSocket.async[JsValue] { request =>
+    implicit val timeout = Timeout(2 second)
 
+    (mergingActor ? RegisterConsumer).map{
+      case RegisterConsumerConfirmation(en) =>
+        val in = Iteratee.ignore[JsValue]
 
-    (in, out)
+        (in, en)
+    }
+
   }
 
 

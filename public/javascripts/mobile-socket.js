@@ -1,5 +1,5 @@
 
-  var wsUri = "ws://192.168.0.10:9000/mobileData";
+  var wsUri = "ws://192.168.0.15:9000/mobileData";
   var output;
   var startOn = false;
 
@@ -37,7 +37,7 @@
                   if(alpha!=null || beta!=null || gamma!=null) {
                       dataContainerOrientation.innerHTML = 'alpha: ' + alpha + '<br/>beta: ' + beta + '<br />gamma: ' + gamma;
                   }
-                  doSend({name: "Nexus 7", a: alpha, b: beta, g: gamma});
+                  doSend(JSON.stringify({device: "Nexus 7", alpha: alpha, beta: beta, gamma: gamma}));
               }
 
               }, false);
