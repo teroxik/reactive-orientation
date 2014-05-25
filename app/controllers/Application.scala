@@ -34,9 +34,8 @@ object Application extends Controller {
   }
 
   def mobileWebSocket = WebSocket.using[OrientationChangeEvent] { request =>
-
-      val device = request.path //TODO:
-      mergingActor ! RegisterProducer(device)
+    val device = request.path //TODO:
+    mergingActor ! RegisterProducer(device)
 
     val in = Iteratee
       .foreach[OrientationChangeEvent] { e =>
@@ -48,16 +47,14 @@ object Application extends Controller {
 
     val out = Enumerator.empty[OrientationChangeEvent]
 
-      (in, out)
+    (in, out)
   }
 
-  def dashboardWebSocket = WebSocket.async[JsValue] {
-    request =>
-     implicit val timeout = Timeout(2 second)
+  def dashboardWebSocket = WebSocket.async[JsValue] { request =>
+    implicit val timeout = Timeout(2 second)
 
-
-    (mergingActor ? RegisterConsumer)
-      .map { case RegisterConsumerConfirmation(en) =>  ( Iteratee.ignore[JsValue], en) }
+    (mergingActor ? RegisterConsumer("TODO")) //TODO
+      .map { case RegisterConsumerConfirmation(en) => (Iteratee.ignore, en) }
   }
 
 }
