@@ -10,7 +10,6 @@ import play.api.libs.iteratee.{Enumerator, Iteratee}
 import akka.pattern.ask
 import actor.DataMerger.RegisterConsumer
 import actor.DataMerger.OrientationChangeEvent
-import actor.DataMerger.RegisterProducer
 import play.api.Play.current
 import akka.util.Timeout
 import scala.concurrent.duration._
@@ -24,8 +23,10 @@ object Application extends Controller {
 
   lazy val mergingActor = Akka.system.actorOf(Props[DataMerger])
 
+  implicit val timeout = Timeout(2 second)
+
   def index = Action {
-    IpAddress.getIpAddreses().foreach(println(_))
+    IpAddress.getIpAddreses().map(println)
     Ok(views.html.index(""))
   }
 
@@ -34,15 +35,9 @@ object Application extends Controller {
   }
 
   def mobileWebSocket = WebSocket.using[OrientationChangeEvent] { request =>
-    val device = request.path //TODO:
-    mergingActor ! RegisterProducer(device)
 
     val in = Iteratee
-      .foreach[OrientationChangeEvent] { e =>
-        mergingActor ! e
-        println(e)
-
-      }
+      .foreach[OrientationChangeEvent] { mergingActor ! _ }
       .map(_ => "Disconnected")
 
     val out = Enumerator.empty[OrientationChangeEvent]
@@ -51,10 +46,7 @@ object Application extends Controller {
   }
 
   def dashboardWebSocket = WebSocket.async[JsValue] { request =>
-    implicit val timeout = Timeout(2 second)
-
-    (mergingActor ? RegisterConsumer("TODO")) //TODO
-      .map { case RegisterConsumerConfirmation(en) => (Iteratee.ignore, en) }
+    (mergingActor ? RegisterConsumer()).map { case RegisterConsumerConfirmation(en) => (Iteratee.ignore, en) }
   }
 
 }
