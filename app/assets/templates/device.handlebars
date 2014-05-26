@@ -1,15 +1,33 @@
-<script src="assets/javascripts/mobile-socket.js" type="text/javascript"></script>
+<div id="output">
+<table>
+    <tbody>
+        <tr>
+            <td>Aplha: </td>
+            <td>{{ orientation.data.alpha }}</td>
+        </tr>
+        <tr>
+            <td>Beta: </td>
+            <td>{{ orientation.data.beta }}</td>
+        </tr>
+        <tr>
+            <td>Gamma: </td>
+            <td>{{ orientation.data.gamma }}</td>
+        </tr>
+    </tbody>
+</table>
 
-<div id="output"></div>
+</div>
 
 <div id="dataContainerOrientation">
-      No device orientation data
+      {{ location.latitude }}
 </div>
 
 <div id="dataGeolocation">
-      No device geolocation data
+      {{ location.longitude }}
 </div>
 
-<input type="button" id="startSendingBtn" value="Start">
-
-<input type="button" id="stopSendingBtn" value="Stop">
+{{#if startOn}}
+    <button {{action 'stop' }}>Stop</button>
+{{else}}
+    <button {{action 'start' }}>Start</button>
+{{/if}}

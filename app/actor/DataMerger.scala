@@ -23,6 +23,7 @@ class DataMerger extends Actor {
       sender ! RegisterConsumerConfirmation(dataEnumerator)
 
     case e: OrientationChangeEvent =>
+      println(e)
       broadCastMessage(e)
   }
 
