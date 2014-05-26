@@ -32,8 +32,9 @@ App.IndexController = Ember.ArrayController.extend({
     	var scene = new THREE.Scene();
     	var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
     	var renderer = new THREE.WebGLRenderer();
-    	renderer.setSize(window.innerWidth, window.innerHeight);
-    	document.body.appendChild(renderer.domElement);
+    	renderer.setSize(600, 300);
+    	var aaa = document.getElementById('content');
+        aaa.appendChild(renderer.domElement);
     	var geometry = new THREE.CubeGeometry(2,3,1);
     	var material1 = new THREE.MeshBasicMaterial({color: 0xff0000});
     	var material2 = new THREE.MeshBasicMaterial({color: 0x00ff00});
