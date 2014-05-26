@@ -14,20 +14,10 @@ App.IndexController = Ember.ArrayController.extend({
   orientationData: { },
   socket: new WebSocket("ws://192.168.0.15:9000/dashboardWebSocket"),
   init: function() {
-      var self = this;
-
-      self.socket.onmessage = function(evt) {
-        self.set('orientationData', JSON.parse(evt.data));
-      };
-      self.socket.onopen = function(evt) {
-         self.set('orientationData', { device: "rand", data: {alpha: 1000, beta: 2, gamma: 3 } });
-      };
-      self.socket.onclose = function(evt) {
-         self.set('orientationData', { device: "rand", data: {alpha: 0, beta: 2, gamma: 3 } });
-      };
-      self.socket.onerror = function(evt) {
-         self.set('orientationData', { device: "rand", data: {alpha: -1000, beta: 2, gamma: 3 } });
-      };
+    var self = this;
+    self.socket.onmessage = function(evt) {
+      self.set('orientationData', JSON.parse(evt.data));
+    };
   }
 });
 
@@ -65,20 +55,16 @@ App.DeviceController = Ember.ObjectController.extend({
 function calculateOrientation() {
     var alpha,beta,gamma;
 
-    //Check for iOS property
     if(event.webkitCompassHeading) {
         alpha = event.webkitCompassHeading;
-        //Rotation is reversed for iOS
         compass.style.WebkitTransform = 'rotate(-' + alpha + 'deg)';
     }
-      //non iOS
     else {
       alpha = event.alpha;
       beta = event.beta;
       gamma = event.gamma;
       webkitAlpha = alpha;
       if(!window.chrome) {
-        //Assume Android stock (this is crude, but good enough for our example) and apply offset
         webkitAlpha = alpha-270;
       }
     }
