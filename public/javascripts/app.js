@@ -8,6 +8,7 @@ App.SubView = Ember.View.extend({
 
 App.Router.map(function() {
   this.resource('device', {  path: '/device' });
+  this.resource('test', {path: '/test'})
 });
 
 App.IndexController = Ember.Controller.extend({
@@ -16,4 +17,8 @@ App.IndexController = Ember.Controller.extend({
 
 App.DeviceController = Ember.Controller.extend({
   appName: 'My First Example'
+
 });
+
+
+
