@@ -15,7 +15,6 @@ App.IndexController = Ember.Controller.extend({
   socket: new WebSocket("ws://192.168.0.15:9000/dashboardWebSocket"),
   init: function() {
       var self = this;
-      self.set('orientationData', { device: "rand", data: {alpha: 999, beta: 2, gamma: 3 } });
 
       self.socket.onmessage = function(evt) {
          self.set('orientationData', JSON.parse(evt.data));
@@ -32,9 +31,66 @@ App.IndexController = Ember.Controller.extend({
   }
 });
 
-App.DeviceController = Ember.Controller.extend({
-  appName: 'My First Example'
+App.DeviceController = Ember.ObjectController.extend({
+  appName: 'My First Example',
+  socket: new WebSocket("ws://192.168.0.15:9000/mobileWebSocket"),
+  startOn: false,
+  orientation: { data: {alpha: 1}},
+  location: { latitude: "No device orientation data", longitude: "No device orientation data" }
+  init: function() {
+    var self = this;
+
+    extractData(function(data) {
+        self.set("orientation", data);
+        self.socket.send(JSON.stringify(data));
+    });
+  },
+  actions: {
+    start: function() {
+        this.set('startOn', true);
+    },
+    stop: function() {
+        this.set('startOn', false);
+    }
+  }
 });
 
+function extractData(callback)
+  {
+      if(window.DeviceOrientationEvent) {
+          window.addEventListener('deviceorientation', function(event) {
+          //    if(startOn) {
+                  var alpha,beta,gamma;
+                  //Check for iOS property
+                  if(event.webkitCompassHeading) {
+                      alpha = event.webkitCompassHeading;
+                      //Rotation is reversed for iOS
+                      compass.style.WebkitTransform = 'rotate(-' + alpha + 'deg)';
+                  }
+                  //non iOS
+                  else {
+                      alpha = event.alpha;
+                      beta = event.beta;
+                      gamma = event.gamma;
+                      webkitAlpha = alpha;
+                      if(!window.chrome) {
+                          //Assume Android stock (this is crude, but good enough for our example) and apply offset
+                          webkitAlpha = alpha-270;
+                      }
+                  }
+
+                  return callback(       {
+                                            device: "Nexus 7",
+                                            data: {
+                                                alpha: alpha,
+                                                beta: beta,
+                                                gamma: gamma
+                                            }
+                                         });
+            //  }
+
+              }, false);
+        }
+  }
 
 
