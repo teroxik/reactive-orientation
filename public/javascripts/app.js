@@ -12,18 +12,61 @@ App.Router.map(function() {
 App.IndexController = Ember.ArrayController.extend({
   appName: 'My First Example',
   orientationData: { },
-  socket: new WebSocket("ws://192.168.0.15:9000/dashboardWebSocket"),
+  cube: '',
+  socket: new WebSocket("ws://192.168.0.10:9000/dashboardWebSocket"),
   init: function() {
+
     var self = this;
+    self.createCanvas();
     self.socket.onmessage = function(evt) {
-      self.set('orientationData', JSON.parse(evt.data));
+      var json = JSON.parse(evt.data);
+      self.set('orientationData',json);
+
+      self.cube.rotation.x = (json.data.beta)/80;
+      self.cube.rotation.y = ((json.data.alpha)-180)/180;
+      self.cube.rotation.z = -(json.data.gamma)/80;
     };
+  },
+  createCanvas: function() {
+    	var self = this;
+    	var scene = new THREE.Scene();
+    	var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    	var renderer = new THREE.WebGLRenderer();
+    	renderer.setSize(window.innerWidth, window.innerHeight);
+    	document.body.appendChild(renderer.domElement);
+    	var geometry = new THREE.CubeGeometry(2,3,1);
+    	var material1 = new THREE.MeshBasicMaterial({color: 0xff0000});
+    	var material2 = new THREE.MeshBasicMaterial({color: 0x00ff00});
+    	var material3 = new THREE.MeshBasicMaterial({color: 0x3333ff});
+    	var material4 = new THREE.MeshBasicMaterial({color: 0xffff00});
+    	var material5 = new THREE.MeshBasicMaterial({color: 0xff33cc});
+    	var material6 = new THREE.MeshBasicMaterial({color: 0x996633});
+
+    	var materials = [];
+
+    	materials.push(material1);
+    	materials.push(material2);
+    	materials.push(material3);
+    	materials.push(material4);
+    	materials.push(material5);
+    	materials.push(material6);
+
+    	self.cube = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+    	scene.add(self.cube);
+    	camera.position.z = 5;
+    	var render = function () {
+    		requestAnimationFrame(render);
+
+    		renderer.render(scene, camera);
+    	 };
+            render();
+
   }
 });
 
 App.DeviceController = Ember.ObjectController.extend({
   appName: 'My First Example',
-  socket: new WebSocket("ws://192.168.0.15:9000/mobileWebSocket"),
+  socket: new WebSocket("ws://192.168.0.10:9000/mobileWebSocket"),
   startOn: false,
   orientation: { },
   init: function() {
