@@ -1,5 +1,7 @@
 App = Ember.Application.create();
 
+App.ApplicationStore = DS.Store.extend();
+
 App.SubView = Ember.View.extend({
   templateName: "sub/sub"
 });
@@ -9,6 +11,12 @@ App.Router.map(function() {
   this.resource('test', {path: '/test'})
 });
 
+App.IndexRoute = Ember.Route.extend({
+ model: function() {
+   return this.store.all('orientation');
+ }
+});
+
 App.IndexController = Ember.ArrayController.extend({
   appName: 'My First Example',
   orientationData: { },
@@ -16,6 +24,9 @@ App.IndexController = Ember.ArrayController.extend({
   init: function() {
     var self = this;
     self.socket.onmessage = function(evt) {
+      //self.store.push('orientation', evt)
+
+      //var a = self.store.all('orientation');
       self.set('orientationData', JSON.parse(evt.data));
     };
   }
