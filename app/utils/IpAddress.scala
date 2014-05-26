@@ -7,19 +7,24 @@ import Scalaz._
 
 object IpAddress {
 
-  def getIpAddreses() = {
-    def processAddress(address: InetAddress): String = {
-      val bytes: Array[Byte] = address.getAddress
-      s"${bytes(0) & 0xFF}.${bytes(1) & 0xFF}.${bytes(2) & 0xFF}.${bytes(3) & 0xFF}"
+  def getIpAddresses() = {
+    def processAddress(address: InetAddress): String =
+      address.getAddress.take(4).map(_ & 0xFF).mkString(".")
+
+    def findIpAddresses() = {
+      Validation.fromTryCatch(
+        NetworkInterface
+          .getNetworkInterfaces().asScala
+          .flatMap(_.getInetAddresses.asScala)
+          .map(processAddress)
+          .toList
+      )
     }
 
-    Validation.fromTryCatch(
-      NetworkInterface.getNetworkInterfaces().asScala
-        .flatMap(_.getInetAddresses.asScala)
-        .map(processAddress)
-        .toList
-        .mkString(", ")
-    ).<-:(_ => "Ip address could not be retrieved. Please find your ip address manually to continue")
+    findIpAddresses() match {
+      case Success(addresses) => addresses.mkString(", ")
+      case Failure(_) => "Ip address could not be retrieved. Please find your ip address manually to continue"
+    }
   }
 
 

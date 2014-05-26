@@ -4,7 +4,6 @@
 
 # Home page
 GET     /                                controllers.Application.index
-GET     /dashboard                       controllers.Application.dashboard
 GET     /mobileWebSocket                 controllers.Application.mobileWebSocket
 GET     /dashboardWebSocket              controllers.Application.dashboardWebSocket
 

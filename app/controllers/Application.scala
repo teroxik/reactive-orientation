@@ -24,14 +24,10 @@ object Application extends Controller {
   lazy val mergingActor = Akka.system.actorOf(Props[DataMerger])
 
   implicit val timeout = Timeout(2 second)
-
+  
   def index = Action {
-    IpAddress.getIpAddreses().map(println)
-    Ok(views.html.index(""))
-  }
-
-  def dashboard = Action {
-    Ok(views.html.dashboard("Your new application is ready."))
+    println(IpAddress.getIpAddresses())
+    Ok(views.html.index())
   }
 
   def mobileWebSocket = WebSocket.using[OrientationChangeEvent] { request =>

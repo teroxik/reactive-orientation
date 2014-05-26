@@ -1,5 +1,5 @@
 (function() {
-  var wsUri = "ws://192.168.0.15:9000/dashboardWebSocket";
+  var wsUri = "ws://192.168.0.10:9000/dashboardWebSocket";
   var output;
 
   function init()
