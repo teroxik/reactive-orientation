@@ -14,7 +14,7 @@ App.IndexController = Ember.ArrayController.extend({
   orientationData: { },
   cube: '',
   renderer: '',
-  socket: new WebSocket("ws://192.168.0.10:9000/dashboardWebSocket"),
+  socket: new WebSocket("ws://gentle-coast-2781.herokuapp.com/dashboardWebSocket"),
   init: function() {
 
     var self = this;
@@ -78,7 +78,7 @@ App.IndexController = Ember.ArrayController.extend({
 
 App.DeviceController = Ember.ObjectController.extend({
   appName: 'My First Example',
-  socket: new WebSocket("ws://192.168.0.10:9000/mobileWebSocket"),
+  socket: new WebSocket("ws://gentle-coast-2781.herokuapp.com/mobileWebSocket"),
   startOn: false,
   orientation: { },
   init: function() {
