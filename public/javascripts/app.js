@@ -28,15 +28,15 @@ App.IndexController = Ember.ArrayController.extend({
       json.data.beta = (json.data.alpha) * Math.PI / 180;
       json.data.gamma = (json.data.gamma) * Math.PI / 180;
 
-//      var hash = self.orientationData;
-//      var deviceData = new Array();
-//      hash[json.device] = json;
-//
-//      for (var key in hash) {
-//        deviceData.push(hash[key]);
-//      }
+      var hash = self.orientationData;
+      var deviceData = new Array();
+      hash[json.device] = json;
 
-      self.set('content', [json]);
+      for (var key in hash) {
+        deviceData.push(hash[key]);
+      }
+
+      self.set('content', deviceData);
 
       self.cube.rotation.x = json.data.beta;
       self.cube.rotation.y = json.data.alpha;
