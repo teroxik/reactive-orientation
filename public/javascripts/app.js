@@ -1,5 +1,7 @@
 App = Ember.Application.create();
 
+App.ApplicationStore = DS.Store.extend();
+
 App.SubView = Ember.View.extend({
   templateName: "sub/sub"
 });
@@ -11,10 +13,10 @@ App.Router.map(function() {
 
 App.IndexController = Ember.ArrayController.extend({
   appName: 'My First Example',
-  orientationData: { },
+  orientationData: {},
   cube: '',
   renderer: '',
-  socket: new WebSocket("ws://192.168.0.10:9000/dashboardWebSocket"),
+  socket: new WebSocket("ws://192.168.0.15:9000/dashboardWebSocket"),
   init: function() {
 
     var self = this;
@@ -22,14 +24,22 @@ App.IndexController = Ember.ArrayController.extend({
     self.socket.onmessage = function(evt) {
       var json = JSON.parse(evt.data);
 
-      json.data.alpha = (json.data.alpha) * Math.PI / 180;
-      json.data.beta =  (json.data.beta) * Math.PI / 180;
+      json.data.alpha =  (json.data.beta) * Math.PI / 180;
+      json.data.beta = (json.data.alpha) * Math.PI / 180;
       json.data.gamma = (json.data.gamma) * Math.PI / 180;
 
-      self.set('orientationData',json);
+      var hash = self.orientationData;
+      var deviceData = new Array();
+      hash[json.device] = json;
 
-      self.cube.rotation.x = json.data.alpha;
-      self.cube.rotation.y = json.data.beta;
+      for (var key in hash) {
+        deviceData.push(hash[key]);
+      }
+
+      self.set('content', deviceData);
+
+      self.cube.rotation.x = json.data.beta;
+      self.cube.rotation.y = json.data.alpha;
       self.cube.rotation.z = -json.data.gamma;
     };
   },
@@ -78,7 +88,7 @@ App.IndexController = Ember.ArrayController.extend({
 
 App.DeviceController = Ember.ObjectController.extend({
   appName: 'My First Example',
-  socket: new WebSocket("ws://192.168.0.10:9000/mobileWebSocket"),
+  socket: new WebSocket("ws://192.168.0.15:9000/mobileWebSocket"),
   startOn: false,
   orientation: { },
   init: function() {

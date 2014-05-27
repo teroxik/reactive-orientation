@@ -1,20 +1,22 @@
 <div id="output">
     <table>
         <tbody>
-            <tr>
-                <td>Aplha: </td>
-                <td>{{ orientationData.data.alpha }}</td>
-            </tr>
-            <tr>
-                <td>Beta: </td>
-                <td>{{ orientationData.data.beta }}</td>
-            </tr>
-            <tr>
-                <td>Gamma: </td>
-                <td>{{ orientationData.data.gamma }}</td>
-            </tr>
+            {{#each }}
+                <tr>
+                    <td>
+                        Device: {{ device }} <br/>
+                        Aplha: {{ data.alpha }} <br/>
+                        Beta: {{ data.alpha }} <br/>
+                        Gamma:{{ data.gamma }} <br/>
+                    </td>
+                    <td>
+
+                    </td>
+                </tr>
+            {{/each}}
         </tbody>
     </table>
 </div>
+
 <div id="canvas"></div>
 <button {{action 'start' }}>Start</button>
