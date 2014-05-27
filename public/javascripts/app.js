@@ -13,6 +13,7 @@ App.IndexController = Ember.ArrayController.extend({
   appName: 'My First Example',
   orientationData: { },
   cube: '',
+  renderer: '',
   socket: new WebSocket("ws://192.168.0.10:9000/dashboardWebSocket"),
   init: function() {
 
@@ -20,22 +21,33 @@ App.IndexController = Ember.ArrayController.extend({
     self.createCanvas();
     self.socket.onmessage = function(evt) {
       var json = JSON.parse(evt.data);
+
+      json.data.alpha = (json.data.alpha) * Math.PI / 180;
+      json.data.beta =  (json.data.beta) * Math.PI / 180;
+      json.data.gamma = (json.data.gamma) * Math.PI / 180;
+
       self.set('orientationData',json);
 
-      self.cube.rotation.x = (json.data.beta)/80;
-      self.cube.rotation.y = ((json.data.alpha)-180)/180;
-      self.cube.rotation.z = -(json.data.gamma)/80;
+      self.cube.rotation.x = json.data.alpha;
+      self.cube.rotation.y = json.data.beta;
+      self.cube.rotation.z = -json.data.gamma;
     };
+  },
+  actions: {
+    start: function() {
+            var self = this;
+            var aaa = document.getElementById('canvas');
+            aaa.appendChild(self.renderer.domElement);
+    }
   },
   createCanvas: function() {
     	var self = this;
     	var scene = new THREE.Scene();
     	var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-    	var renderer = new THREE.WebGLRenderer();
-    	renderer.setSize(600, 300);
-    	var aaa = document.getElementById('content');
-        aaa.appendChild(renderer.domElement);
-    	var geometry = new THREE.CubeGeometry(2,3,1);
+    	self.renderer = new THREE.WebGLRenderer();
+    	self.renderer.setSize(600, 300);
+
+    	var geometry = new THREE.BoxGeometry(2,1,3);
     	var material1 = new THREE.MeshBasicMaterial({color: 0xff0000});
     	var material2 = new THREE.MeshBasicMaterial({color: 0x00ff00});
     	var material3 = new THREE.MeshBasicMaterial({color: 0x3333ff});
@@ -57,10 +69,9 @@ App.IndexController = Ember.ArrayController.extend({
     	camera.position.z = 5;
     	var render = function () {
     		requestAnimationFrame(render);
-
-    		renderer.render(scene, camera);
-    	 };
-            render();
+    		self.renderer.render(scene, camera);
+        };
+        render();
 
   }
 });
