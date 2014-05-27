@@ -1,1 +1,1 @@
-web: target/start -Dhttp.port=${PORT} ${JAVA_OPTS}
+web: target/universal/stage/bin/reactive-orientation -Dhttp.port=${PORT} ${JAVA_OPTS}
