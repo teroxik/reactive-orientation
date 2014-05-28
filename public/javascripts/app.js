@@ -15,10 +15,11 @@ App.IndexController = Ember.ArrayController.extend({
   appName: 'My First Example',
   cube: '',
   renderer: '',
+  timerId: '',
   content: Ember.A(),
   socket: new WebSocket("ws://192.168.0.15:9000/dashboardWebSocket"),
   init: function() {
-
+    this.removeUnusedDevicesTimer();
     var self = this;
     self.createCanvas();
     self.socket.onmessage = function(evt) {
@@ -36,10 +37,6 @@ App.IndexController = Ember.ArrayController.extend({
           item.data.set("beta", json.data.beta);
           item.data.set("gamma", json.data.gamma);
           exists = true;
-        } else {
-          if((new Date().getTime() - 5000) > item.get("updated")) {
-            self.get("content").removeObject(item);
-          }
         }
       });
 
@@ -62,6 +59,17 @@ App.IndexController = Ember.ArrayController.extend({
       self.cube.rotation.y = json.data.alpha;
       self.cube.rotation.z = -json.data.gamma;
     };
+  },
+  removeUnusedDevicesTimer: function () {
+    var self = this;
+    Ember.run.later(this, function() {
+      self.get("content").forEach(function(item){
+        if((new Date().getTime() - 2000) > item.get("updated")) {
+          self.get("content").removeObject(item);
+        }
+      });
+      this.removeUnusedDevicesTimer();
+    }, 1000);
   },
   actions: {
     start: function() {
