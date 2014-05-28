@@ -13,9 +13,9 @@ App.Router.map(function() {
 
 App.IndexController = Ember.ArrayController.extend({
   appName: 'My First Example',
-  orientationData: {},
   cube: '',
   renderer: '',
+  content: Ember.A(),
   socket: new WebSocket("ws://192.168.0.15:9000/dashboardWebSocket"),
   init: function() {
 
@@ -28,15 +28,35 @@ App.IndexController = Ember.ArrayController.extend({
       json.data.beta = (json.data.alpha) * Math.PI / 180;
       json.data.gamma = (json.data.gamma) * Math.PI / 180;
 
-      var hash = self.orientationData;
-      var deviceData = new Array();
-      hash[json.device] = json;
+      var exists = false;
+      self.get("content").forEach(function(item){
+        if(item.get("device") === json.device) {
+          item.set("updated", Date.now());
+          item.data.set("alpha", json.data.alpha);
+          item.data.set("beta", json.data.beta);
+          item.data.set("gamma", json.data.gamma);
+          exists = true;
+        } else {
+          if((new Date().getTime() - 5000) > item.get("updated")) {
+            self.get("content").removeObject(item);
+          }
+        }
+      });
 
-      for (var key in hash) {
-        deviceData.push(hash[key]);
+      if(!exists) {
+        self.get("content").pushObject(
+          Ember.Object.create(
+          {
+            device: json.device,
+            updated: Date.now(),
+            data: Ember.Object.create(
+            {
+              alpha: json.data.alpha,
+              beta: json.data.beta,
+              gamma: json.data.gamma
+            })
+          }));
       }
-
-      self.set('content', deviceData);
 
       self.cube.rotation.x = json.data.beta;
       self.cube.rotation.y = json.data.alpha;
