@@ -11,16 +11,13 @@ App.Router.map(function() {
   this.resource('test', {path: '/test'})
 });
 
+
 App.IndexController = Ember.ArrayController.extend({
   appName: 'My First Example',
   orientationData: {},
   cube: '',
   renderer: '',
-<<<<<<< HEAD
-  socket: new WebSocket("ws://gentle-coast-2781.herokuapp.com/dashboardWebSocket"),
-=======
-  socket: new WebSocket("ws://192.168.0.15:9000/dashboardWebSocket"),
->>>>>>> 0ce43571a3d63472250cb5c8a4b9331f49805037
+  socket: new WebSocket("ws://192.168.0.10:9000/dashboardWebSocket"),
   init: function() {
 
     var self = this;
@@ -90,16 +87,44 @@ App.IndexController = Ember.ArrayController.extend({
   }
 });
 
+App.DeviceController = Ember.Route.extend({
+  model: function(){
+      return App.Orientation.create({name: ''});
+  }
+});
+
 App.DeviceController = Ember.ObjectController.extend({
-  appName: 'My First Example',
-<<<<<<< HEAD
-  socket: new WebSocket("ws://gentle-coast-2781.herokuapp.com/mobileWebSocket"),
-=======
-  socket: new WebSocket("ws://192.168.0.15:9000/mobileWebSocket"),
->>>>>>> 0ce43571a3d63472250cb5c8a4b9331f49805037
+  model: {name: '', data: {}},
+  socket: new WebSocket("ws://192.168.0.10:9000/mobileWebSocket"),
   startOn: false,
-  orientation: { },
   init: function() {
+    var parser = new UAParser();
+    var deviceName = {};
+
+    if (parser.getDevice().model != undefined) {
+        deviceName['model'] = parser.getDevice().model;
+    }
+    if (parser.getDevice().type != undefined) {
+        deviceName['type']  = parser.getDevice().type;
+    }
+    if (parser.getDevice().vendor != undefined) {
+        deviceName['vendor'] = parser.getDevice().vendor;
+    }
+    if (parser.getOS().name != undefined) {
+        deviceName['osName'] = parser.getOS().name;
+    }
+    if (parser.getBrowser().name != undefined) {
+            deviceName['browser'] = parser.getBrowser().name;
+    }
+    if (parser.getBrowser().name != undefined) {
+                deviceName['browserMajor'] = parser.getBrowser().major;
+    }
+    if (parser.getBrowser().name != undefined) {
+                deviceName['browserVersion'] = parser.getBrowser().version;
+    }
+    var self = this;
+    self.model.name = JSON.stringify(deviceName);
+
     this.registerListeners();
   },
   actions: {
@@ -112,20 +137,23 @@ App.DeviceController = Ember.ObjectController.extend({
   },
   registerListeners: function() {
     var self = this;
+    console.log(self.model);
     if(window.DeviceOrientationEvent) {
       window.addEventListener('deviceorientation', function(event) {
         if (self.startOn) {
-          var orientationData = calculateOrientation();
-          var orientation =  {device: "Nexus 7", data: orientationData }
-          self.set("orientation", orientation);
-          self.socket.send(JSON.stringify(orientation));
+          var orientationData = calculateOrientation(event);
+          console.log(self.model);
+          var data = {name: self.model.name, data: orientationData};
+          self.set('model',data)
+          console.log(self.model);
+          self.socket.send(JSON.stringify(self.model));
         }
       }, false);
     }
   }
 });
 
-function calculateOrientation() {
+function calculateOrientation(event) {
     var alpha,beta,gamma;
 
     if(event.webkitCompassHeading) {
