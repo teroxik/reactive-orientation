@@ -21,7 +21,6 @@ App.IndexController = Ember.ArrayController.extend({
   init: function() {
     this.removeUnusedDevicesTimer();
     var self = this;
-    self.createCanvas();
     self.socket.onmessage = function(evt) {
       var json = JSON.parse(evt.data);
 
@@ -57,6 +56,8 @@ App.IndexController = Ember.ArrayController.extend({
               gamma: json.data.gamma
             })
           }));
+          var canvas = document.getElementById('canvas' + device);
+          canvas.appendChild(self.renderer.domElement);
       }
     };
   },
