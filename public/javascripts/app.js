@@ -36,6 +36,9 @@ App.IndexController = Ember.ArrayController.extend({
           item.data.set("alpha", json.data.alpha);
           item.data.set("beta", json.data.beta);
           item.data.set("gamma", json.data.gamma);
+          item.cube.rotation.x = json.data.beta;
+          item.cube.rotation.y = json.data.alpha;
+          item.cube.rotation.z = -json.data.gamma;
           exists = true;
         }
       });
@@ -46,6 +49,7 @@ App.IndexController = Ember.ArrayController.extend({
           {
             device: json.device,
             updated: Date.now(),
+            cube: self.createCanvas(),
             data: Ember.Object.create(
             {
               alpha: json.data.alpha,
@@ -54,10 +58,6 @@ App.IndexController = Ember.ArrayController.extend({
             })
           }));
       }
-
-      self.cube.rotation.x = json.data.beta;
-      self.cube.rotation.y = json.data.alpha;
-      self.cube.rotation.z = -json.data.gamma;
     };
   },
   removeUnusedDevicesTimer: function () {
@@ -102,8 +102,8 @@ App.IndexController = Ember.ArrayController.extend({
     	materials.push(material5);
     	materials.push(material6);
 
-    	self.cube = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
-    	scene.add(self.cube);
+    	var cube = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+    	scene.add(cube);
     	camera.position.z = 5;
     	var render = function () {
     		requestAnimationFrame(render);
@@ -111,6 +111,7 @@ App.IndexController = Ember.ArrayController.extend({
         };
         render();
 
+        return cube;
   }
 });
 
