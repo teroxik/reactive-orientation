@@ -113,8 +113,8 @@ App.IndexController = Ember.ArrayController.extend({
     	var self = this;
     	var scene = new THREE.Scene();
     	var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-    	var renderer = new THREE.WebGLRenderer();
-    	renderer.setSize(600, 300);
+    	var renderer = new THREE.WebGLRenderer({alpha: true});
+    	renderer.setSize(300, 300);
 
     	scene.add(cube);
     	camera.position.z = 5;
