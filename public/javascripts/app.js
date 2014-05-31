@@ -28,9 +28,11 @@ App.IndexController = Ember.ArrayController.extend({
       json.data.beta = (json.data.alpha) * Math.PI / 180;
       json.data.gamma = (json.data.gamma) * Math.PI / 180;
 
-      var exists = false;
+      var device = undefined;
+
       self.get("content").forEach(function(item){
         if(item.get("device") === json.device) {
+          device = item;
           item.set("updated", Date.now());
           item.data.set("alpha", json.data.alpha);
           item.data.set("beta", json.data.beta);
@@ -38,27 +40,42 @@ App.IndexController = Ember.ArrayController.extend({
           item.cube.rotation.x = json.data.beta;
           item.cube.rotation.y = json.data.alpha;
           item.cube.rotation.z = -json.data.gamma;
-          exists = true;
         }
       });
 
-      if(!exists) {
-        self.get("content").pushObject(
-          Ember.Object.create(
-          {
-            device: json.device,
-            updated: Date.now(),
-            cube: self.createCanvas(),
-            data: Ember.Object.create(
-            {
-              alpha: json.data.alpha,
-              beta: json.data.beta,
-              gamma: json.data.gamma
-            })
-          }));
-          var canvas = document.getElementById('canvas' + device);
-          canvas.appendChild(self.renderer.domElement);
+      if(device == undefined) {
+        var newDevice = Ember.Object.create(
+                          {
+                            device: json.device,
+                            deviceId: json.device.replace(/\s+/g, ''),
+                            updated: Date.now(),
+                            cube: self.createCube(),
+                            renderer: undefined,
+                            data: Ember.Object.create(
+                            {
+                              alpha: json.data.alpha,
+                              beta: json.data.beta,
+                              gamma: json.data.gamma
+                            })
+                          });
+
+        self.get("content").pushObject(newDevice);
       }
+
+      if(device != undefined && device.renderer == undefined) {
+        var canvas = document.getElementById('canvas' + device.deviceId);
+        if(canvas != undefined) {
+          var renderer = self.createCanvas(device.cube);
+
+          device.set('cube', device.cube);
+          device.set('renderer', renderer);
+          canvas.appendChild(renderer.domElement);
+        }
+      }
+
+        /*var canvas = document.getElementById('canvas' + newDevice.deviceId);
+        canvas.appendChild(self.renderer.domElement);*/
+
     };
   },
   removeUnusedDevicesTimer: function () {
@@ -72,47 +89,42 @@ App.IndexController = Ember.ArrayController.extend({
       this.removeUnusedDevicesTimer();
     }, 1000);
   },
-  actions: {
-    start: function() {
-            var self = this;
-            var aaa = document.getElementById('canvas');
-            aaa.appendChild(self.renderer.domElement);
-    }
+  createCube: function() {
+    var materials = [];
+
+    var geometry = new THREE.BoxGeometry(2,1,3);
+    var material1 = new THREE.MeshBasicMaterial({color: 0xff0000});
+    var material2 = new THREE.MeshBasicMaterial({color: 0x00ff00});
+    var material3 = new THREE.MeshBasicMaterial({color: 0x3333ff});
+    var material4 = new THREE.MeshBasicMaterial({color: 0xffff00});
+    var material5 = new THREE.MeshBasicMaterial({color: 0xff33cc});
+    var material6 = new THREE.MeshBasicMaterial({color: 0x996633});
+
+    materials.push(material1);
+    materials.push(material2);
+    materials.push(material3);
+    materials.push(material4);
+    materials.push(material5);
+    materials.push(material6);
+
+    return new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
   },
-  createCanvas: function() {
+  createCanvas: function(cube) {
     	var self = this;
     	var scene = new THREE.Scene();
     	var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-    	self.renderer = new THREE.WebGLRenderer();
-    	self.renderer.setSize(600, 300);
+    	var renderer = new THREE.WebGLRenderer();
+    	renderer.setSize(600, 300);
 
-    	var geometry = new THREE.BoxGeometry(2,1,3);
-    	var material1 = new THREE.MeshBasicMaterial({color: 0xff0000});
-    	var material2 = new THREE.MeshBasicMaterial({color: 0x00ff00});
-    	var material3 = new THREE.MeshBasicMaterial({color: 0x3333ff});
-    	var material4 = new THREE.MeshBasicMaterial({color: 0xffff00});
-    	var material5 = new THREE.MeshBasicMaterial({color: 0xff33cc});
-    	var material6 = new THREE.MeshBasicMaterial({color: 0x996633});
-
-    	var materials = [];
-
-    	materials.push(material1);
-    	materials.push(material2);
-    	materials.push(material3);
-    	materials.push(material4);
-    	materials.push(material5);
-    	materials.push(material6);
-
-    	var cube = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
     	scene.add(cube);
     	camera.position.z = 5;
     	var render = function () {
     		requestAnimationFrame(render);
-    		self.renderer.render(scene, camera);
+    		renderer.render(scene, camera);
         };
         render();
 
-        return cube;
+        return renderer;
   }
 });
 
