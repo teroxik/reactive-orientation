@@ -32,17 +32,14 @@ object Application extends Controller {
 
   def mobileWebSocket = WebSocket.using[OrientationChangeEvent] { request =>
 
-    val in = Iteratee
-      .foreach[OrientationChangeEvent] { mergingActor ! _ }
-      .map(_ => "Disconnected")
-
+    val in = Iteratee.foreach[OrientationChangeEvent] { mergingActor ! _ }
     val out = Enumerator.empty[OrientationChangeEvent]
 
     (in, out)
   }
 
-  def dashboardWebSocket = WebSocket.async[JsValue] { request =>
-    (mergingActor ? RegisterConsumer()).map { case RegisterConsumerConfirmation(en) => (Iteratee.ignore, en) }
+  def dashboardWebSocket = WebSocket.tryAccept[JsValue] { request =>
+    (mergingActor ? RegisterConsumer()).map { case RegisterConsumerConfirmation(en) => Right((Iteratee.ignore, en)) }
   }
 
 }
