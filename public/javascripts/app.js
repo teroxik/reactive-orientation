@@ -14,14 +14,14 @@ App.Router.map(function() {
 
 App.IndexController = Ember.ArrayController.extend({
   appName: 'My First Example',
-  orientationData: {},
   cube: '',
   renderer: '',
-  socket: new WebSocket("ws://192.168.0.10:9000/dashboardWebSocket"),
+  timerId: '',
+  content: Ember.A(),
+  socket: new WebSocket("ws://192.168.0.15:9000/dashboardWebSocket"),
   init: function() {
-
+    this.removeUnusedDevicesTimer();
     var self = this;
-    self.createCanvas();
     self.socket.onmessage = function(evt) {
       var json = JSON.parse(evt.data);
 
@@ -29,20 +29,49 @@ App.IndexController = Ember.ArrayController.extend({
       json.data.beta = (json.data.alpha) * Math.PI / 180;
       json.data.gamma = (json.data.gamma) * Math.PI / 180;
 
-      var hash = self.orientationData;
-      var deviceData = new Array();
-      hash[json.device] = json;
+      var exists = false;
+      self.get("content").forEach(function(item){
+        if(item.get("device") === json.device) {
+          item.set("updated", Date.now());
+          item.data.set("alpha", json.data.alpha);
+          item.data.set("beta", json.data.beta);
+          item.data.set("gamma", json.data.gamma);
+          item.cube.rotation.x = json.data.beta;
+          item.cube.rotation.y = json.data.alpha;
+          item.cube.rotation.z = -json.data.gamma;
+          exists = true;
+        }
+      });
 
-      for (var key in hash) {
-        deviceData.push(hash[key]);
+      if(!exists) {
+        self.get("content").pushObject(
+          Ember.Object.create(
+          {
+            device: json.device,
+            updated: Date.now(),
+            cube: self.createCanvas(),
+            data: Ember.Object.create(
+            {
+              alpha: json.data.alpha,
+              beta: json.data.beta,
+              gamma: json.data.gamma
+            })
+          }));
+          var canvas = document.getElementById('canvas' + device);
+          canvas.appendChild(self.renderer.domElement);
       }
-
-      self.set('content', deviceData);
-
-      self.cube.rotation.x = json.data.beta;
-      self.cube.rotation.y = json.data.alpha;
-      self.cube.rotation.z = -json.data.gamma;
     };
+  },
+  removeUnusedDevicesTimer: function () {
+    var self = this;
+    Ember.run.later(this, function() {
+      self.get("content").forEach(function(item){
+        if((new Date().getTime() - 2000) > item.get("updated")) {
+          self.get("content").removeObject(item);
+        }
+      });
+      this.removeUnusedDevicesTimer();
+    }, 1000);
   },
   actions: {
     start: function() {
@@ -75,8 +104,8 @@ App.IndexController = Ember.ArrayController.extend({
     	materials.push(material5);
     	materials.push(material6);
 
-    	self.cube = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
-    	scene.add(self.cube);
+    	var cube = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+    	scene.add(cube);
     	camera.position.z = 5;
     	var render = function () {
     		requestAnimationFrame(render);
@@ -84,6 +113,7 @@ App.IndexController = Ember.ArrayController.extend({
         };
         render();
 
+        return cube;
   }
 });
 
@@ -95,7 +125,8 @@ App.DeviceController = Ember.Route.extend({
 
 App.DeviceController = Ember.ObjectController.extend({
   model: {name: '', data: {}},
-  socket: new WebSocket("ws://192.168.0.10:9000/mobileWebSocket"),
+  appName: 'My First Example',
+  socket: new WebSocket("ws://192.168.0.15:9000/mobileWebSocket"),
   startOn: false,
   init: function() {
     var parser = new UAParser();
