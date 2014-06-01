@@ -84,7 +84,7 @@ var Orientation = (function() {
 
             return camera;
        };
-    }
+    };
 
     return new orientationServices();
 })();
