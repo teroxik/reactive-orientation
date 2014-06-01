@@ -5,11 +5,11 @@ import play.api.libs.concurrent.Akka
 import akka.actor.Props
 import actor._
 import play.api.libs.json.JsValue
-import actor.DataMerger._
+import actor.StreamMergingActor._
 import play.api.libs.iteratee.{Enumerator, Iteratee}
 import akka.pattern.ask
-import actor.DataMerger.RegisterConsumer
-import actor.DataMerger.OrientationChangeEvent
+import actor.StreamMergingActor.RegisterConsumer
+import actor.StreamMergingActor.OrientationChangeEvent
 import play.api.Play.current
 import akka.util.Timeout
 import scala.concurrent.duration._
@@ -18,31 +18,28 @@ import ExecutionContext.Implicits.global
 import json.JsonFormats._
 import utils.IpAddress
 
+object Application extends Controller with IpAddress {
 
-object Application extends Controller {
-
-  lazy val mergingActor = Akka.system.actorOf(Props[DataMerger])
-
+  lazy val mergingActor = Akka.system.actorOf(Props[StreamMergingActor])
   implicit val timeout = Timeout(2 second)
   
   def index = Action {
-    println(IpAddress.getIpAddresses())
+    println(getIpAddresses())
+
     Ok(views.html.index())
   }
 
   def mobileWebSocket = WebSocket.using[OrientationChangeEvent] { request =>
-
-    val in = Iteratee
-      .foreach[OrientationChangeEvent] { mergingActor ! _ }
-      .map(_ => "Disconnected")
-
+    val in = Iteratee.foreach[OrientationChangeEvent] { mergingActor ! _ }
     val out = Enumerator.empty[OrientationChangeEvent]
 
     (in, out)
   }
 
-  def dashboardWebSocket = WebSocket.async[JsValue] { request =>
-    (mergingActor ? RegisterConsumer()).map { case RegisterConsumerConfirmation(en) => (Iteratee.ignore, en) }
+  def dashboardWebSocket = WebSocket.tryAccept[JsValue] { request =>
+    (mergingActor ? RegisterConsumer()).map {
+      case RegisterConsumerConfirmation(en) => Right((Iteratee.ignore, en))
+    }
   }
 
 }

@@ -5,10 +5,10 @@ import collection.JavaConverters._
 import scalaz._
 import Scalaz._
 
-object IpAddress {
+trait IpAddress {
 
   def getIpAddresses() = {
-    def processAddress(address: InetAddress): String =
+    def formatIpAddress(address: InetAddress): String =
       address.getAddress.take(4).map(_ & 0xFF).mkString(".")
 
     def findIpAddresses() = {
@@ -16,14 +16,14 @@ object IpAddress {
         NetworkInterface
           .getNetworkInterfaces().asScala
           .flatMap(_.getInetAddresses.asScala)
-          .map(processAddress)
+          .map(formatIpAddress)
           .toList
       )
     }
 
     findIpAddresses() match {
       case Success(addresses) => addresses.mkString(", ")
-      case Failure(_) => "Ip address could not be retrieved. Please find your ip address manually to continue"
+      case Failure(_) => "Ip address could not be retrieved. Please find ip address of your server manually to continue."
     }
   }
 
