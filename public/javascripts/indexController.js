@@ -1,12 +1,12 @@
 App.IndexController = Ember.ArrayController.extend({
     appName: 'My First Example',
     content: Ember.A(),
-    socket: new WebSocket("ws://192.168.0.15:9000/dashboardWebSocket"),
+    socket: {},
 
     init: function() {
         var self = this;
         self.removeUnusedDevicesTimer();
-
+        self.set('socket', new WebSocket('ws://192.168.0.15:9000/dashboardWebSocket'))
 
         self.socket.onmessage = function(event) {
             self.handleWebSocketReceivedMessage(event);
@@ -15,14 +15,14 @@ App.IndexController = Ember.ArrayController.extend({
 
     removeUnusedDevicesTimer: function () {
         function deviceDataUpdatedInSeconds(device, seconds) {
-            return (new Date().getTime() - seconds * 1000) < device.get("updated");
+            return (new Date().getTime() - seconds * 1000) < device.get('updated');
         }
 
         var self = this;
         Ember.run.later(this, function() {
-            self.get("content").forEach(function(device) {
+            self.get('content').forEach(function(device) {
                 if(!deviceDataUpdatedInSeconds(device, 2)) {
-                    self.get("content").removeObject(device);
+                    self.get('content').removeObject(device);
                 }
             });
 
@@ -36,14 +36,14 @@ App.IndexController = Ember.ArrayController.extend({
 
         var device = undefined;
 
-        self.get("content").forEach(function(item) {
-            if(item.get("device") === json.device) {
+        self.get('content').forEach(function(item) {
+            if(item.get('device') === json.device) {
                 device = Device.update(item, json);
             }
         });
 
         if(!alreadyExists(device)) {
-            self.get("content").pushObject(Device.create(json));
+            self.get('content').pushObject(Device.create(json));
         }
 
         if(alreadyExists(device) && !alreadyExists(device.renderer)) {
@@ -52,7 +52,12 @@ App.IndexController = Ember.ArrayController.extend({
             if(canvasAlreadyRendered(canvas)) {
                 var renderer = Orientation.createCanvas(device.cube);
                 device.set('renderer', renderer);
-                canvas.appendChild(renderer.domElement);
+
+                try {
+                    canvas.appendChild(renderer.domElement)
+                } catch (e) {
+                    self.get('content').removeObject(device);
+                }
             }
         }
 

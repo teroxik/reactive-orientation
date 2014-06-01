@@ -35,21 +35,21 @@ var Orientation = (function() {
             materials.push(material6);
 
             var cube = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
-            cube.rotation.reorder( "YXZ" );
+            cube.rotation.reorder('YXZ');
             return cube;
         };
 
         this.setObjectQuaternion = function () {
-            var zee = new THREE.Vector3( 0, 0, 1 );
+            var zee = new THREE.Vector3(0, 0, 1);
             var euler = new THREE.Euler();
             var q0 = new THREE.Quaternion();
-            var q1 = new THREE.Quaternion( - Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ) );
+            var q1 = new THREE.Quaternion(- Math.sqrt( 0.5 ), 0, 0, Math.sqrt( 0.5 ));
 
-            return function ( quaternion, alpha, beta, gamma ) {
-                euler.set( beta, alpha, - gamma, 'YXZ' );
-                quaternion.setFromEuler( euler );
-                quaternion.multiply( q1 );
-                quaternion.multiply( q0.setFromAxisAngle( zee, - (window.orientation || 0) ) );
+            return function (quaternion, alpha, beta, gamma) {
+                euler.set(beta, alpha, -gamma, 'YXZ');
+                quaternion.setFromEuler(euler);
+                quaternion.multiply(q1);
+                quaternion.multiply(q0.setFromAxisAngle(zee, -(window.orientation || 0)));
             }
         }();
 
@@ -82,7 +82,7 @@ var Orientation = (function() {
             orientation.data.beta = THREE.Math.degToRad(orientation.data.beta);
             orientation.data.gamma = THREE.Math.degToRad(orientation.data.gamma);
             return orientation;
-        }
+        };
 
         function createCamera() {
             var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);

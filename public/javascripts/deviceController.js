@@ -1,11 +1,12 @@
 App.DeviceController = Ember.ObjectController.extend({
     appName: 'My First Example',
-    socket: new WebSocket("ws://192.168.0.15:9000/mobileWebSocket"),
     startOn: false,
-    orientation: { },
+    socket: {},
+    orientation: {},
 
     init: function() {
         this.registerListeners();
+        this.set('socket', new WebSocket('ws://192.168.0.15:9000/mobileWebSocket'))
     },
 
     actions: {
@@ -25,7 +26,7 @@ App.DeviceController = Ember.ObjectController.extend({
                 if (self.get("startOn")) {
                     var orientationData = Orientation.calculateEulerOrientationForDevice(event);
                     var orientation =  { device: "Nexus 7", data: orientationData }
-                    self.set("orientation", orientation);
+                    self.set('orientation', orientation);
                     self.socket.send(JSON.stringify(orientation));
                 }
             }, false);
