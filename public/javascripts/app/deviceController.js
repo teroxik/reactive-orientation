@@ -1,14 +1,26 @@
 App.DeviceController = Ember.ObjectController.extend({
-    model: {device: '', data: {}},
+    model: {device: '', colour: '', data: {}},
+    socket: { },
+    serverEndpointAddress: "ws://".concat(document.location.host,"/mobileWebSocket"),
     startOn: false,
     orientation: { },
-    socket: {},
 
     init: function() {
         var self = this;
         self.model.device = JSON.stringify(Device.getDeviceDetails());
+        self.model.colour = Colour.stringToColour(self.model.device); //TODO: get/set
+
+        self.set("socket",new WebSocket(self.serverEndpointAddress));
+
+        self.socket.onclose = function(event) {
+            console.log("Socket closed");
+            self.set("socket",new WebSocket(self.serverEndpointAddress));
+        }
+        self.socket.onopen = function(event) {
+            console.log("Socket opened");
+        }
+
         this.registerListeners();
-        this.set('socket', new WebSocket('ws://192.168.0.15:9000/mobileWebSocket'))
     },
 
     actions: {
@@ -28,8 +40,8 @@ App.DeviceController = Ember.ObjectController.extend({
                 if (self.get("startOn")) {
                     var orientationData = Orientation.calculateEulerOrientationForDevice(event);
 
-                    var data = {device: self.model.device, data: orientationData};
-                    self.set('model',data)
+                    var data = {device: self.model.device, colour: self.model.colour, data: orientationData};
+                    self.set('model', data)
                     self.socket.send(JSON.stringify(data));
                 }
             }, false);

@@ -21,8 +21,9 @@ var Device = (function() {
                 {
                     device: orientationData.device,
                     deviceId: orientationData.device.replace(/\s+/g, ''),
+                    colour: orientationData.colour,
                     updated: Date.now(),
-                    cube: Orientation.createCube(),
+                    cube: Orientation.createCube(orientationData.colour),
                     renderer: undefined,
                     data: Ember.Object.create({
                         alpha: orientationData.data.alpha,

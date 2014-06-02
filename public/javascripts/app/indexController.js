@@ -2,16 +2,26 @@
     App.IndexController = Ember.ArrayController.extend({
         appName: 'My First Example',
         content: Ember.A(),
+        serverEndpointAddress: "ws://".concat(document.location.host,"/dashboardWebSocket"),
         socket: {},
 
         init: function() {
             var self = this;
             self.removeUnusedDevicesTimer();
-            self.set('socket', new WebSocket('ws://192.168.0.15:9000/dashboardWebSocket'))
+
+            self.set("socket",new WebSocket(self.serverEndpointAddress));
 
             self.socket.onmessage = function(event) {
                 self.handleWebSocketReceivedMessage(event);
             };
+            self.socket.onclose = function(event) {
+                console.log("Socket closed");
+                self.set("socket",new WebSocket(self.serverEndpointAddress));
+            }
+            self.socket.onopen = function(event) {
+                console.log("Socket opened");
+            }
+
         },
 
         removeUnusedDevicesTimer: function () {
