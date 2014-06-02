@@ -1,12 +1,14 @@
 App.DeviceController = Ember.ObjectController.extend({
     model: {device: '', data: {}},
-    socket: new WebSocket("ws://192.168.0.10:9000/mobileWebSocket"),
+    socket: { },
+    serverEndpointAddress: "ws://".concat(document.location.host,"/mobileWebSocket"),
     startOn: false,
     orientation: { },
 
     init: function() {
         var parser = new UAParser();
         var deviceName = {};
+
 
         if (parser.getDevice().model != undefined) {
             deviceName['model'] = parser.getDevice().model;
@@ -30,7 +32,18 @@ App.DeviceController = Ember.ObjectController.extend({
                 deviceName['browserVersion'] = parser.getBrowser().version;
         }
         var self = this;
+
         self.model.device = JSON.stringify(deviceName);
+
+        self.set("socket",new WebSocket(self.serverEndpointAddress));
+
+        self.socket.onclose = function(event) {
+            console.log("Socket closed");
+            self.set("socket",new WebSocket(self.serverEndpointAddress));
+        }
+        self.socket.onopen = function(event) {
+            console.log("Socket opened");
+        }
 
         this.registerListeners();
     },
