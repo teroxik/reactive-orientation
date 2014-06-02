@@ -2,14 +2,13 @@
     App.IndexController = Ember.ArrayController.extend({
         appName: 'My First Example',
         content: Ember.A(),
-        socket: new WebSocket("ws://192.168.0.15:9000/dashboardWebSocket"),
+        socket: new WebSocket("ws://192.168.0.10:9000/dashboardWebSocket"),
 
         init: function() {
             var self = this;
             self.removeUnusedDevicesTimer();
-
-
             self.socket.onmessage = function(event) {
+                console.log("Received onMmessage");
                 self.handleWebSocketReceivedMessage(event);
             };
         },
@@ -32,6 +31,7 @@
         },
 
         handleWebSocketReceivedMessage: function(event) {
+            console.log("Received message");
             var self = this;
             var json = JSON.parse(event.data);
 
