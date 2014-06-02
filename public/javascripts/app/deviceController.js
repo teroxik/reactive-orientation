@@ -1,6 +1,5 @@
 App.DeviceController = Ember.ObjectController.extend({
     model: {device: '', data: {}},
-    socket: new WebSocket("ws://192.168.0.10:9000/mobileWebSocket"),
     startOn: false,
     orientation: { },
     socket: {},
