@@ -4,6 +4,7 @@ App.DeviceController = Ember.ObjectController.extend({
     serverEndpointAddress: "ws://".concat(document.location.host,"/mobileWebSocket"),
     startOn: false,
     orientation: { },
+    socket: {},
 
     init: function() {
         var parser = new UAParser();
@@ -46,6 +47,7 @@ App.DeviceController = Ember.ObjectController.extend({
         }
 
         this.registerListeners();
+        this.set('socket', new WebSocket('ws://192.168.0.15:9000/mobileWebSocket'))
     },
 
     actions: {

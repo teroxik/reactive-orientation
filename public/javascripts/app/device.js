@@ -2,10 +2,10 @@ var Device = (function() {
     var deviceServices = function() {
 
         this.update = function(item, orientationData) {
-            item.set("updated", Date.now());
-            item.data.set("alpha", orientationData.data.alpha);
-            item.data.set("beta", orientationData.data.beta);
-            item.data.set("gamma", orientationData.data.gamma);
+            item.set('updated', Date.now());
+            item.data.set('alpha', orientationData.data.alpha);
+            item.data.set('beta', orientationData.data.beta);
+            item.data.set('gamma', orientationData.data.gamma);
 
             Orientation.setObjectQuaternion(
                 item.cube.quaternion,
