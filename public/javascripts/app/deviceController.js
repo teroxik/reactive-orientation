@@ -47,7 +47,6 @@ App.DeviceController = Ember.ObjectController.extend({
         }
 
         this.registerListeners();
-        this.set('socket', new WebSocket('ws://192.168.0.15:9000/mobileWebSocket'))
     },
 
     actions: {
