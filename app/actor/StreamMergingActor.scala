@@ -10,7 +10,7 @@ object StreamMergingActor {
   case class RegisterConsumerConfirmation(enumerator: Enumerator[JsValue])
   case class RegisterConsumer()
 
-  case class OrientationChangeEvent(device: String, colour: Int, data: OrientationChangeData)
+  case class OrientationChangeEvent(deviceInfo: String, deviceId: String, colour: Int, data: OrientationChangeData)
   case class OrientationChangeData(alpha: Double, beta: Double, gamma: Double)
 }
 

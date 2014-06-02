@@ -19,8 +19,8 @@ var Device = (function() {
         this.create = function(orientationData) {
             return Ember.Object.create(
                 {
-                    device: orientationData.device,
-                    deviceId: orientationData.device.replace(/\s+/g, ''),
+                    deviceInfo: orientationData.deviceInfo,
+                    deviceId: orientationData.deviceId,
                     colour: orientationData.colour,
                     updated: Date.now(),
                     cube: Orientation.createCube(orientationData.colour),

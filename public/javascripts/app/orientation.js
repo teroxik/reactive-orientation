@@ -20,7 +20,7 @@ var Orientation = (function() {
             var materials = [];
 
             var geometry = new THREE.BoxGeometry(2,3,1);
-            var material1 = new THREE.MeshBasicMaterial({color: parseInt(colour , 16)});
+            var material1 = new THREE.MeshBasicMaterial({color: colour});
 
             materials.push(material1);
             materials.push(material1);
