@@ -19,10 +19,11 @@ var Device = (function() {
         this.create = function(orientationData) {
             return Ember.Object.create(
                 {
-                    device: orientationData.device,
-                    deviceId: orientationData.device.replace(/\s+/g, ''),
+                    deviceInfo: orientationData.deviceInfo,
+                    deviceId: orientationData.deviceId,
+                    colour: orientationData.colour,
                     updated: Date.now(),
-                    cube: Orientation.createCube(),
+                    cube: Orientation.createCube(orientationData.colour),
                     renderer: undefined,
                     data: Ember.Object.create({
                         alpha: orientationData.data.alpha,
@@ -32,6 +33,35 @@ var Device = (function() {
                 }
             );
         };
+
+        this.getDeviceDetails = function() {
+            var parser = new UAParser();
+            var deviceName = {};
+
+            if (parser.getDevice().model != undefined) {
+                deviceName['model'] = parser.getDevice().model;
+            }
+            if (parser.getDevice().type != undefined) {
+                deviceName['type']  = parser.getDevice().type;
+            }
+            if (parser.getDevice().vendor != undefined) {
+                deviceName['vendor'] = parser.getDevice().vendor;
+            }
+            if (parser.getOS().name != undefined) {
+                deviceName['osName'] = parser.getOS().name;
+            }
+            if (parser.getBrowser().name != undefined) {
+                deviceName['browser'] = parser.getBrowser().name;
+            }
+            if (parser.getBrowser().name != undefined) {
+                deviceName['browserMajor'] = parser.getBrowser().major;
+            }
+            if (parser.getBrowser().name != undefined) {
+                deviceName['browserVersion'] = parser.getBrowser().version;
+            }
+
+            return deviceName;
+        }
     };
 
     return new deviceServices();
