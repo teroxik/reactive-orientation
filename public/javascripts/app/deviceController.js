@@ -1,40 +1,18 @@
 App.DeviceController = Ember.ObjectController.extend({
-    model: {device: '', data: {}},
+    model: {deviceInfo: '', deviceId: '', colour: '', data: {}},
     socket: { },
     serverEndpointAddress: "ws://".concat(document.location.host,"/mobileWebSocket"),
     startOn: false,
     orientation: { },
-    socket: {},
+    deviceColour: '',
 
     init: function() {
-        var parser = new UAParser();
-        var deviceName = {};
-
-
-        if (parser.getDevice().model != undefined) {
-            deviceName['model'] = parser.getDevice().model;
-        }
-        if (parser.getDevice().type != undefined) {
-            deviceName['type']  = parser.getDevice().type;
-        }
-        if (parser.getDevice().vendor != undefined) {
-            deviceName['vendor'] = parser.getDevice().vendor;
-        }
-        if (parser.getOS().name != undefined) {
-            deviceName['osName'] = parser.getOS().name;
-        }
-        if (parser.getBrowser().name != undefined) {
-            deviceName['browser'] = parser.getBrowser().name;
-        }
-        if (parser.getBrowser().name != undefined) {
-            deviceName['browserMajor'] = parser.getBrowser().major;
-        }
-        if (parser.getBrowser().name != undefined) {
-                deviceName['browserVersion'] = parser.getBrowser().version;
-        }
         var self = this;
+        self.model.deviceInfo = JSON.stringify(Device.getDeviceDetails());
+        self.model.colour = Colour.stringToColour(self.model.deviceInfo);
+        self.model.deviceId = self.model.deviceInfo.replace(/[^a-zA-Z0-9]+/g,'');
 
-        self.model.device = JSON.stringify(deviceName);
+        self.set('deviceColour', '#' + self.model.colour.toString(16));
 
         self.set("socket",new WebSocket(self.serverEndpointAddress));
 
@@ -66,8 +44,14 @@ App.DeviceController = Ember.ObjectController.extend({
                 if (self.get("startOn")) {
                     var orientationData = Orientation.calculateEulerOrientationForDevice(event);
 
-                    var data = {device: self.model.device, data: orientationData};
-                    self.set('model',data)
+                    var data = {
+                        deviceInfo: self.model.deviceInfo,
+                        deviceId: self.model.deviceId,
+                        colour: self.model.colour,
+                        data: orientationData
+                    };
+
+                    self.set('model', data)
                     self.socket.send(JSON.stringify(data));
                 }
             }, false);

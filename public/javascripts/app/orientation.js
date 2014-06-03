@@ -16,23 +16,18 @@ var Orientation = (function() {
             return renderer;
         };
 
-        this.createCube = function() {
+        this.createCube = function(colour) {
             var materials = [];
 
             var geometry = new THREE.BoxGeometry(2,3,1);
-            var material1 = new THREE.MeshBasicMaterial({color: 0xff0000});
-            var material2 = new THREE.MeshBasicMaterial({color: 0x00ff00});
-            var material3 = new THREE.MeshBasicMaterial({color: 0x3333ff});
-            var material4 = new THREE.MeshBasicMaterial({color: 0xffff00});
-            var material5 = new THREE.MeshBasicMaterial({color: 0xff33cc});
-            var material6 = new THREE.MeshBasicMaterial({color: 0x996633});
+            var material1 = new THREE.MeshBasicMaterial({color: colour});
 
             materials.push(material1);
-            materials.push(material2);
-            materials.push(material3);
-            materials.push(material4);
-            materials.push(material5);
-            materials.push(material6);
+            materials.push(material1);
+            materials.push(material1);
+            materials.push(material1);
+            materials.push(material1);
+            materials.push(material1);
 
             var cube = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
             cube.rotation.reorder('YXZ');

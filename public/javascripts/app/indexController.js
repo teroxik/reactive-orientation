@@ -48,7 +48,7 @@
             var device = undefined;
 
             self.get('content').forEach(function(item) {
-                if(item.get('device') === json.device) {
+                if(item.get('deviceId') === json.deviceId) {
                     device = Device.update(item, json);
                 }
             });
