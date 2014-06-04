@@ -1,8 +1,9 @@
-<div id="output" class="row">
-    <h7>{{ model.device }}</h7>
-
+<div class="padding-top-bottom-left">
+    <legend>Device Orienation API Data</legend>
+    <p>The device is uniquely identified on the dashboard by generated color.</p>
+</div>
+<div class="padding-left">
     <div class="deviceColour" style="background-color:{{unbound deviceColour}}"></div>
-
     <table class="table table-striped">
         <tbody>
             <tr>
@@ -19,10 +20,11 @@
             </tr>
         </tbody>
     </table>
-
-    {{#if startOn}}
-        <button {{action 'stop' }} class="btn-danger">Stop</button>
-    {{else}}
-        <button {{action 'start' }} class="btn-primary">Start</button>
-    {{/if}}
+    <div class="btn-toolbar pull-right">
+        {{#if startOn}}
+            <button {{action 'stop' }} class="btn-danger">Stop</button>
+        {{else}}
+            <button {{action 'start' }} class="btn-primary">Start</button>
+        {{/if}}
+    </div>
 </div>
