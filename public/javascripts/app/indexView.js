@@ -5,7 +5,7 @@
             Ember.run.scheduleOnce('afterRender', this, function(){
                 var ip = document.getElementById('ip');
                 var ipInApp = document.getElementById('ipInApp');
-                ipInApp.innerHTML = ip.innerHTML;
+                ipInApp.innerHTML = ip.getAttribute("content");
             });
         },
     });

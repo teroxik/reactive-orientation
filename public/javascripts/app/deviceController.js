@@ -8,6 +8,7 @@ App.DeviceController = Ember.ObjectController.extend({
 
     init: function() {
         var self = this;
+
         self.model.deviceInfo = JSON.stringify(Device.getDeviceDetails());
         self.model.colour = Colour.stringToColour(self.model.deviceInfo);
         self.model.deviceId = self.model.deviceInfo.replace(/[^a-zA-Z0-9]+/g,'');

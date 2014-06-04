@@ -1,19 +1,20 @@
-<div class="row"><legend>Server IP address</legend>
-
-<p>Use one of the following ip addresses to connect from a mobile device. It will be most likely the third one starting with 192 or 10 (LAN).
-The standard port is 9000. You should see the actual port number in the browser address bar.</p>
-<b><span id="ipInApp"></span></b>
+<div class="padding-top-bottom-left">
+    <legend>Server IP Address</legend>
+    <p>Use one of the following ip addresses to connect from a mobile device. It will be most likely the third one starting with 192 or 10 (LAN).
+    The standard port is 9000. You should see the actual port number in the browser address bar.
+    </p>
+    <b><span id="ipInApp"></span></b>
 </div>
-<div id="output">
+<div class="padding-left">
     <table class="table table-striped">
         <tbody>
             {{#each content }}
                 <tr>
                     <td style="width:300px">
                         Device: {{ deviceInfo }} <br/>
-                        Aplha: {{ data.alpha }} <br/>
-                        Beta: {{ data.beta }} <br/>
-                        Gamma:{{ data.gamma }} <br/>
+                        Aplha: {{ data.alpha }} [rad]<br/>
+                        Beta: {{ data.beta }} [rad]<br/>
+                        Gamma:{{ data.gamma }} [rad]<br/>
                     </td>
                     <td>
                         <div id="canvas{{unbound deviceId}}" class="canvas">
