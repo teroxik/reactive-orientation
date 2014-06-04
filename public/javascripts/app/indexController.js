@@ -43,7 +43,7 @@
 
         handleWebSocketReceivedMessage: function(event) {
             var self = this;
-            var json = Orientation.convertDegreesToRadians(JSON.parse(event.data));
+            var json = JSON.parse(event.data);
 
             var device = undefined;
 

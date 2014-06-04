@@ -72,12 +72,6 @@ var Orientation = (function() {
             };
         };
 
-        this.convertDegreesToRadians = function(orientation) {
-            orientation.data.alpha = THREE.Math.degToRad(orientation.data.alpha);
-            orientation.data.beta = THREE.Math.degToRad(orientation.data.beta);
-            orientation.data.gamma = THREE.Math.degToRad(orientation.data.gamma);
-            return orientation;
-        };
 
         function createCamera() {
             var camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
