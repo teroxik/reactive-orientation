@@ -1,7 +1,7 @@
 package utils
 
 import scalaz.Lens
-import actor.StreamMergingActor.{OrientationChangeData, OrientationChangeEvent}
+import actors.StreamMergingActor.{OrientationChangeData, OrientationChangeEvent}
 
 trait DegreesToRadiansConversions {
 
