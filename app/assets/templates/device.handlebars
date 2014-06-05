@@ -3,28 +3,41 @@
     <p>The device is uniquely identified on the dashboard by generated color.</p>
 </div>
 <div class="padding-left">
-    <div class="deviceColour" style="background-color:{{unbound deviceColour}}"></div>
-    <table class="table table-striped">
-        <tbody>
-            <tr>
-                <td>Aplha: </td>
-                <td>{{ model.data.alpha }} [deg]</td>
-            </tr>
-            <tr>
-                <td>Beta: </td>
-                <td>{{ model.data.beta }} [deg]</td>
-            </tr>
-            <tr>
-                <td>Gamma: </td>
-                <td>{{ model.data.gamma }} [deg]</td>
-            </tr>
-        </tbody>
-    </table>
-    <div class="btn-toolbar pull-right">
-        {{#if startOn}}
-            <button {{action 'stop' }} class="btn-danger">Stop</button>
-        {{else}}
-            <button {{action 'start' }} class="btn-primary">Start</button>
-        {{/if}}
+
+        <table class="table">
+                <tbody>
+                    <tr>
+                        <td>
+                          Generated color:
+                        </td>
+                        <td>
+                            <div class="deviceColour" style="background-color:{{unbound deviceColour}}"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Aplha [deg]: </td>
+                        <td> {{ model.data.alpha }} </td>
+                    </tr>
+                    <tr>
+                        <td>Beta [deg]: </td>
+                        <td> {{ model.data.beta }} </td>
+                    </tr>
+                    <tr>
+                        <td>Gamma [deg]: </td>
+                        <td> {{ model.data.gamma }} </td>
+                    </tr>
+                </tbody>
+            </table>
+    <div class="row">
+        <div class="span12">
+              <div class="btn-toolbar pull-left">
+                    {{#if startOn}}
+                        <button {{action 'stop' }} class="btn-danger">Stop</button>
+                    {{else}}
+                        <button {{action 'start' }} class="btn-primary">Start</button>
+                    {{/if}}
+                </div>
+        </div>
     </div>
+
 </div>

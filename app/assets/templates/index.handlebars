@@ -6,15 +6,14 @@
     <b><span id="ipInApp"></span></b>
 </div>
 <div class="padding-left">
-    <table class="table table-striped">
+    <table class="table">
         <tbody>
             {{#each content }}
                 <tr>
-                    <td style="width:300px">
-                        Device: {{ deviceInfo }} <br/>
-                        Aplha: {{ data.alpha }} [rad]<br/>
-                        Beta: {{ data.beta }} [rad]<br/>
-                        Gamma:{{ data.gamma }} [rad]<br/>
+                    <td width="300px">
+                        Aplha [rad]: {{ data.alpha }} <br/>
+                        Beta [rad]: {{ data.beta }}   <br/>
+                        Gamma [rad]:{{ data.gamma }}  <br/>
                     </td>
                     <td>
                         <div id="canvas{{unbound deviceId}}" class="canvas">

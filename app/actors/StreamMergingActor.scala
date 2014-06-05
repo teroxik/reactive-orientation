@@ -1,8 +1,8 @@
-package actor
+package actors
 
 import akka.actor.Actor
 import play.api.libs.json.{Json, JsValue}
-import actor.StreamMergingActor._
+import actors.StreamMergingActor._
 import json.JsonFormats._
 import play.api.libs.iteratee.Concurrent.Channel
 import scalaz.Lens

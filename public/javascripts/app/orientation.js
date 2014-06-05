@@ -5,8 +5,28 @@ var Orientation = (function() {
             var scene = new THREE.Scene();
             var renderer = new THREE.WebGLRenderer({alpha: true});
             renderer.setSize(600, 300);
+            renderer.shadowMapEnabled = true;
 
+            cube.receiveShadow = true;
             scene.add(cube);
+
+            var light = new THREE.DirectionalLight('white', 1);
+            light.shadowDarkness		= 0.5;
+            light.shadowCameraVisible	= true;
+            light.position.set(0,1,0).normalize();
+            light.castShadow = true;
+            //scene.add(light);
+
+            // add subtle blue ambient lighting
+            var ambientLight = new THREE.AmbientLight(0x000044);
+            scene.add(ambientLight);
+
+            // directional lighting
+            var directionalLight = new THREE.DirectionalLight(0xffffff);
+            directionalLight.position.set(1, 1, 1).normalize();
+            scene.add(directionalLight);
+
+
             var render = function () {
                 requestAnimationFrame(render);
                 renderer.render(scene, createCamera());
@@ -20,16 +40,9 @@ var Orientation = (function() {
             var materials = [];
 
             var geometry = new THREE.BoxGeometry(2,3,1);
-            var material1 = new THREE.MeshBasicMaterial({color: colour});
 
-            materials.push(material1);
-            materials.push(material1);
-            materials.push(material1);
-            materials.push(material1);
-            materials.push(material1);
-            materials.push(material1);
+            var cube = new THREE.Mesh(geometry, new THREE.MeshLambertMaterial({color: colour}));
 
-            var cube = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
             cube.rotation.reorder('YXZ');
             return cube;
         };

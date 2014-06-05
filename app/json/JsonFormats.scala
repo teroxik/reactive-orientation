@@ -1,7 +1,7 @@
 package json
 
 import play.api.libs.json.Json
-import actor.StreamMergingActor.{OrientationChangeEvent, OrientationChangeData}
+import actors.StreamMergingActor.{OrientationChangeEvent, OrientationChangeData}
 import play.api.mvc.WebSocket.FrameFormatter
 
 object JsonFormats {

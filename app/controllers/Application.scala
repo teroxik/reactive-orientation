@@ -2,7 +2,7 @@ package controllers
 
 import play.api.mvc._
 import akka.actor.Props
-import actor._
+import actors._
 import play.api.libs.json.JsValue
 import play.api.libs.iteratee.{Concurrent, Iteratee}
 import play.api.Play.current
@@ -10,7 +10,7 @@ import akka.util.Timeout
 import scala.concurrent.duration._
 import utils.IpAddress
 import json.JsonFormats._
-import actor.StreamMergingActor.OrientationChangeEvent
+import actors.StreamMergingActor.OrientationChangeEvent
 
 object Application extends Controller with IpAddress {
 
