@@ -6,21 +6,21 @@
 <body>
 <div>
     <h2>Reactive-Orientation</h2>
-    <p>This application shows how simple is to use latest technologies to build a very nice and reactive application 'modern' web application, comprising of a Client-side JavaScript App built using <code>EmberJS</code> and <code>WebSockets</code> with WebGL <code>ThreeJS</code>, served from the <code>Play 2 Framework</code> and merging data from different sources using <code>Play Iteratees</code> and  <code>Akka</code>.</p>
+    <p>This application shows how simple is to use latest technologies to build a very nice reactive 'modern' application web application comprising of a Client-side JavaScript App built using <code>EmberJS</code> and <code>WebSockets</code> with WebGL <code>ThreeJS</code>, served from the <code>Play 2 Framework</code> and merging data from different sources using <code>Play Iteratees</code> and  <code>Akka</code>.</p>
     <p>We will start with overall description of the project</p>
 
     <h2>Preview</h2>
 
     <p>
         Reactive applications are aiming to resolve the latest needs in software development. Even web is quickly moving towards the features of the Reactive Manifesto. The ability to react quickly to user’s interaction is becoming more and more important. This activator template illustrates how a real time communication can be simply, reliably and scalably built on the Typesafe platform.
-        The template uses Play 2.3 and utilizes Iteratees as an useful abstraction to handle continuous streams of data in form of real time bidirectional websocket communication as well as Actor web socket interface. Other technologies used are Scala, Play, Akka and Scalaz for server backend and Ember.js, HTML5 device orientation API and Three.js for front end and visualisation as well as some other smaller tools that will be mentioned in the documentation.
+        The template uses Play 2.3 and utilizes Iteratees as an useful abstraction to handle continuous streams of data in form of real time bidirectional websocket communication as well as Actor web socket interface. Other technologies used are Scala, Play, Akka and Scalaz for server backend and Ember.js, HTML5 device orientation API, Bootstrap and Three.js for front end and visualisation as well as some other smaller tools that will be mentioned in the documentation.
     </p>
 
     <p>
-        Main functionality of the Play server is to act as a router for web socket messages. It accepts connections on two different web sockets. The first web socket receives messages with data about spatial orientation from an arbitrary number of mobile devices and treats them as streams of data. The streams from all devices are merged into a single stream and sent to the other websocket where the data for each individual device are clearly displayed in real time. This is illustrated on the figure below.
+        Main functionality of the Play server is to act as a router for web socket messages. It accepts connections on two different web sockets. The first web socket receives messages with data about spatial orientation from an arbitrary number of mobile devices. The server applies transformation function to each message and merges streams of messages from all devices into a single stream which is in turn sent to the other websocket where the data for each individual device are clearly displayed in real time. This is illustrated on the figure below.
     </p>
 
-    <img src="TODO"> </img>
+    <img src="marble.png"> </img>
 
     <p>
         One of the main goals of this template is to show how such non-trivial application can be written in a very elegant and readable way with just a few lines of code and to show and discuss the concepts, technologies, various options that are provided to programmer to meet the goals, provide resources for further education and to help programmers start with or improve in using these technologies.
@@ -60,7 +60,7 @@
     </p>
 
     <p>
-       It would bepossible to achieve the same using Iteratees and Enumerators approach. The code would then look for example like this.
+       It would be possible to achieve the same using Iteratees and Enumerators approach. The code would then look for example like this.
     </p>
 
     <p>
@@ -117,6 +117,34 @@
 
     <p>
         The important fact is that all this is non-blocking. Play sends a message using “fire and forget” technique where it is simply telling the actor what needs to be done and does not wait for response (and if one would wait for a response from actor, it would be done in a non-blocking way by simply defining the expected message in receive or by using Future as a representation of asynchronous computation). The message is processed asynchronously to the sender by the actor, usually in different thread.
+    </p>
+
+    <h4>DegreesToRadiansConversions</h4>
+
+    <p>
+        Html5 device orientation events create data about angles in degrees, but three.js library used for display requires data in radians. This gives us an opportunity to apply a transformation function to the data. Trait DegreesToRadiansConversions has one public method called convertDegreesToRadians which converts the angles in data property in OrientationChangeEvent from degrees to radians. Since case classes are immutable, the angle values can not be simply updated and we need to provide a whole new instance of OrientationChangeData. However data property in OrientationChangeEvent is also immutable so we need to provide a new instance of this class too. This is an implication of immutable data structures that may look like a disadvantage, but it actually is not.
+    </p>
+
+    <p>
+        OrientationChangeEvent(
+          event.deviceInfo,
+          event.deviceId,
+          event.colour,
+          OrientationChangeData(math.toRadians(event.data.alpha), math.toRadians(event.data.beta), math.toRadians(event.data.gamma))
+        )
+    </p>
+
+    <p>
+        This code is fine, but unnecessary. Updating properties in larger structures could become messy even when the logic would be extracted to a factory class.
+        That is why Scala provides copy method on case classes.
+    </p>
+
+    <p>
+        event.copy(data =  OrientationChangeData(math.toRadians(event.data.alpha), math.toRadians(event.data.beta), math.toRadians(event.data.gamma)))
+    </p>
+
+    <p>
+        This template however uses another approach which utilizes Scalaz library and a concept called lenses known from functional programming. A lens is created by passing get and set functions. We can then use the lens to modify the value viewed through it. Note that the template uses the same data structure for both radians and degrees which may not be the best practice, because the client does not know which value is stored in it. It is used for the opportunity to discuss copy and lenses concepts, but otherwise you may want to distinguish the cases for example by using types, generics or separate classes.
     </p>
 
     <h4>IpAddress trait</h4>
@@ -183,7 +211,7 @@
 
     <p>
         The DeviceController has 3 important properties startOn flag saying if the data are being sent, socket which is the websocket object and orientation which represents current set of device’s orientation data. A handlebars template device.handlebars is used as a view for this controller. Important thing to note here is that Ember controller properties are accessible from the view and Ember automatically binds their state and updates the view when they are changed. Ember also provides set of standard tools for data access called Ember-data (http://emberjs.com/guides/models/). For sake of simplicity of code and clarity of the intended functionality, the web socket interactions are handled manually in this template.
-        The controllers  subscribes to deviceorientation event which triggers every time you move your device. When this happens, the properties of the controller are updated (and therefore the values re-rendered in the view).
+        The controllers subscribes to deviceorientation event which triggers every time you move your device. When this happens, the properties of the controller are updated (and therefore the values re-rendered in the view). Html5 provides this api to be able to use data from device's orientation sensors in a browser. It provides values alpha, beta and gamma which represent rotation through angle about axes. The specification can be found on www.w3.org/TR/orientation-event. There are some differences between browsers, but method calculateEulerOrientationForDevice in orientation module handles that.
     </p>
 
     <p>
@@ -212,11 +240,11 @@
     <h4>Dashboard</h4>
 
     <p>
-        indexController is a bit more complicated, but still simple. Important thing to note is that it extends ArrayController, which means it can contain array of models instead of just one or none. Content property is initialized to empty array. This array will include list of active devices. Index.handlebars view is a template for this route. The {{#each}} is used to render the whole array of models stored in controller and their selected properties. Each model also has an empty div called canvas where the orientation data will be visually displayed.
+        indexController is a bit more complicated, but still understandable. Important thing to note is that it extends ArrayController, which means it can contain array of models instead of just one or none. Content property is initialized to empty array. This array will include list of active devices. Index.handlebars view is a template for this route. The {{#each}} is used to render the whole array of models stored in controller and their selected properties. Each model also has an empty div called canvas where the orientation data will be visually displayed when available.
     </p>
 
     <p>
-        The main idea of this controller is to receive messages with data about orientation from all the connected devices and either adds them to the content array (in case the device is not yet present)
+        The main idea of this controller is to receive messages with data about orientation from all the connected devices and either add them to the content array (in case the device is not yet present)
     </p>
 
     <p>
@@ -224,7 +252,7 @@
     </p>
 
     <p>
-        or updates their orientation values (if the device is already in the content array).
+        or update their orientation values (if the device is already in the content array).
     </p>
 
     <p>
@@ -236,13 +264,13 @@
     </p>
 
     <p>
-        The majority of the work described above is done by handleWebSocketReceivedMessage function which is triggered with each received web socket message. The methods to create and update device object are extracted to Device module located in device.js file. Notice objects are created using Ember.Object.create() function which takes javascript object as parameter. Property values are updated using set method which ensures the values are bound and updated properly.
+        The majority of the work described above is done by handleWebSocketReceivedMessage function which is triggered with each received web socket message. The methods to create and update device object are extracted to Device module located in device.js file. Notice objects are created using Ember.Object.create() function which takes javascript object as parameter. Property values that are dynamically updated are updated using set method which ensures the values are bound and updated properly.
     </p>
 
     <h2>Graphical representation</h2>
 
     <p>
-        An impressive javascript library three.js (http://threejs.org/) is used for graphical representation of the orientation data. This library aims to provide 3d graphics in a browser. Most of the functionality was extracted to Orientation module in orientation.js. It contains functions to initialize the drawing canvas (createCanvas), create objects (createCube), transformations to achieve rotation around world axes (setObjectQuaternion) and extracting device’s orientation data (calculateEulerOrientationForDevice). The canvas is then attached to the DOM (the empty div in index.handlebars) in indexController’s handleWebSocketReceivedMessage function.
+        An impressive javascript library three.js (http://threejs.org/) is used for graphical representation of the orientation data. This library aims to provide 3d graphics in a browser. Most of the functionality was extracted to Orientation module in orientation.js. It contains functions to initialize the drawing canvas (createCanvas), create objects (createCube), transformations to achieve rotation around world axes (setObjectQuaternion) and extracting device’s orientation data (calculateEulerOrientationForDevice). The canvas is then attached to the DOM (the empty div in index.handlebars) mentioned earlier in indexController’s handleWebSocketReceivedMessage function.
     </p>
 
     <p>
@@ -256,7 +284,7 @@
     <h4>Conclusion</h4>
 
     <p>
-        In conclusion, I would like to ask you to think about what the template achieves. Notice Play is not just a server to provide REST endpoints. It acts as a server and router for messages here. It can be also very simply used to do calculations and transformations on the messages and cooperate with other services. All in a reactive way. Where else can Play and web sockets (or even different protocol) be used? How difficult would it be for example to create a 2d, isometric projection or even a 3d racing game using the Play server we already have? Wouldn’t it be achievable by just changing the javascript front end? Or a message queue? Or an ESB?
+        In conclusion, I would like to ask you to think about what the template achieves. Notice Play is not just a server providing resources on endpoints. It acts as a server and router for messages which can also apply transformations on them. It would also be possible to cooperate with other services and applications. All in a reactive way. Where else can Play and web sockets (or even different protocol) be used? How difficult would it be for example to create a 2d, isometric projection or even a 3d racing game using the Play server we already have? Wouldn’t it be achievable by just changing the javascript front end? Or a message queue? Or an ESB?
     </p>
 
 </div>
