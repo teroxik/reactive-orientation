@@ -1,11 +1,13 @@
 Reactive Orientation
 ===========
 
-**EmberJS - ThreeJS - WebSockets - Scala - Play / Iteratees**
+**HTML 5 Device Orientation API - EmberJS - ThreeJS - WebSockets - Scala - Play / Iteratees / ScalaWebSockets**
 
-A full application stack for a Modern Web application, lets review the components:
+A full application stack for a reactive application with realt-time WebGL visualization, lets review the components:
 
-
+* **HTML 5 API** - 
+  *  [HTML 5 Rocks Tutorial](http://www.html5rocks.com/en/tutorials/device/orientation/)
+  *  
 * **EmberJS** - interesting client side javasscript framework for building ambitious webapplications
   *  [http://emberjs.com/](http://emberjs.com/)
 
@@ -18,25 +20,29 @@ A full application stack for a Modern Web application, lets review the component
 * **PlayFramework** - version 2.3 with the Scala API and Play Iteratees
   *  [PlayFramework Docs](http://www.playframework.com/documentation/2.3.x/Home)
 
+* **ScalaWebSockets** - defining websockets usage the same way as actions
+  *  [ScalaWebsockets Docs](http://www.playframework.com/documentation/2.3.x/ScalaWebSockets)
+
+
 
 Getting Started
 ----------
 
 Your development environment will require:
-*  SBT / Play see [here]() for installation instructions.
+*  SBT / Play see [here](http://www.playframework.com/download) for installation instructions.
 
 Once the prerequisites have been installed, you will be able to execute the following from a terminal.
 
 ```
-../modern-web-template >  activator run
+../reactive-orientation >  activator run
 ```
 
 This should fetch all the dependencies and start a Web Server listening on *localhost:9000*
 
 
-Note: The new play 2.3 sometimes reloads the content too much so it's better the start command.
+Note: The new play 2.3 sometimes reloads the content too much so it's better to use the start command for live demo purposes.
 
 ```
-../modern-web-template >  activator start
+../reactive-orientation >  activator start
 ```
 
