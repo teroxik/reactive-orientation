@@ -15,6 +15,11 @@
         non-trivial use case can be implemented very quickly, scalably, understandably and elegantly with just a few lines of
         code and to describe and explain the solution and possible alternatives with aim to help even complete beginners
         to understand and start using these technologies.</p>
+
+    <p>
+        In the beginning it doesn't look very interesting. But we will get there.
+    </p>
+    <img src="tutorial/index.png">
 </div>
 <div>
     <h2>Preview</h2>
@@ -219,19 +224,26 @@
         The controllers subscribes to deviceorientation event which triggers every time you move your device. When this happens, the properties of the controller are updated (and therefore the values re-rendered in the view). Html5 provides this api to be able to use data from device's orientation sensors in a browser. It provides values alpha, beta and gamma which represent rotation through angle about axes. The specification can be found on www.w3.org/TR/orientation-event. There are some differences between browsers, but method calculateEulerOrientationForDevice in orientation module handles that.
     </p>
 
-    <img src="tutorial/device.png" >
-    <img src="tutorial/device-portrait.png" >
+     <pre><code>
+         var orientationData = Orientation.calculateEulerOrientationForDevice(event);
 
-    <pre><code>
-        var orientationData = Orientation.calculateEulerOrientationForDevice(event);
+         var data = {
+         deviceInfo: self.model.deviceInfo,
+         deviceId: self.model.deviceId,
+         colour: self.model.colour,
+         data: orientationData
+         };
+     </code></pre>
 
-          var data = {
-          deviceInfo: self.model.deviceInfo,
-          deviceId: self.model.deviceId,
-          colour: self.model.colour,
-          data: orientationData
-        };
-    </code></pre>
+    <p>
+        Screenshot from Nexus 7 tablet in portrait mode before starting the sending process.
+    </p>
+    <img src="tutorial/device.png" alt="Screenshot of device page sends data from table">
+
+    <p>
+        Screenshot from Nexus 7 tablet in landscape mode showing the generated color and real-time orientation data.
+    </p>
+    <img src="tutorial/device-landscape.png" alt="Screenshot of device page with actual data.">
 
     <p>
         We refer to the values by self, because they are properties of the controller to be simply displayed on the device page. Apart from orientationData, they are all static and only change when the page is reloaded. OrientationData on the other hand are calculated with each change of device’s orientation. Device info contains data about the device - model, type, vendor, os or browser and version etc which are retrieved using the ua-parser-js project (https://github.com/faisalman/ua-parser-js). These informations are used to create unique deviceId and colour by adding a current timestamp and using an appropriate hash function to convert string to colour. These properties are then used to identify the device throughout the application. Uniqueness provided by this approach is sufficient for this template. After that, the data are sent to the Play server’s device web socket.
@@ -288,7 +300,60 @@
         Calls to <code>Device.update()</code> function then dynamically update the rotation of the displayed object by using Orientation.setObjectQuaternion() function.
     </p>
 
-    <h2>TODO</h2>
+    <h4>Three.js</h4>
+
+    <p>The maing WebGL and Three.js objects are </p>
+
+    <ul>
+        <li>renderer - renders the scene using camera</li>
+        <li>camera - defines the view of the scene</li>
+        <li>scene - all displayed objects must be added to scene </li>
+    </ul>
+
+    <p>
+        Render is using a render function to update the canvas with the latest changes.
+    </p>
+
+    <pre><code>
+       var render = function () {
+          requestAnimationFrame(render);
+          renderer.render(scene, createCamera());
+       };
+       render();
+    </code></pre>
+
+    <p>
+      We are using a simple cube/box object which is instantiated using the THREE.BoxGeometry class. But it is not enough for displaying it in the scene. We have to specify the object material.
+      We chose one of the simplest materials to display boxes with only one colour. For our demo purpose is the box a very nice representation of mobile device (mobile,phone,tablet). The selected colour is passed to the material constructor and our object can be appended to the scene.
+    </p>
+
+
+
+    <pre><code>
+       var scene = new THREE.Scene();
+       var renderer = new THREE.WebGLRenderer({alpha: true});
+       renderer.setSize(600, 300);
+       renderer.shadowMapEnabled = true;
+
+       cube.receiveShadow = true;
+       scene.add(cube);
+
+       // add subtle blue ambient lighting
+       var ambientLight = new THREE.AmbientLight(0x000044);
+       scene.add(ambientLight);
+
+       // directional lighting
+       var directionalLight = new THREE.DirectionalLight(0xffffff);
+       directionalLight.position.set(1, 1, 1).normalize();
+       scene.add(directionalLight);
+    </code></pre>
+
+
+    <p>
+        The 3d object is very nice but if we use only one color for all faces it doesn't look so good. The 3d objects becomes flat. Because of that we added 2 different lights to the scene with different colors and positions. It causes color changes on the faces which thank looks much more plastic. Unfortunately it slightly changes the resulting color so it is not so easy to identify the proper device.
+    </p>
+
+
 </div>
 <div>
     <h2>Conclusion</h2>
@@ -297,6 +362,14 @@
         In conclusion, notice what the template achieves. Play is not just a server providing resources on endpoints. It acts as a server and router for messages which can also apply transformations on them. It would also be possible to cooperate with other services and applications. All in a reactive way. Where else can Play and web sockets (or even different protocol) be used? How difficult would it be for example to create a 2d, isometric projection or even a 3d racing game using the Play server we already have? Wouldn’t it be achievable by just changing the javascript front end? Or a message queue? Or an enterprise service bus?
     </p>
 
+    <h4>Testing</h4>
+
+    <p>
+      We know that tests are very important part of the application. This is only a demo with only small amount of code but still we included at least tests for the util package in the play backend. Because only with tests you can build applications which can satisfy the Reactive manifesto.
+    </p>
+
+    <h4>Improvements</h4>
+
     <p>
        Can we do better? There is always space for improvements that could be made.
     </p>
@@ -304,7 +377,8 @@
         <ul>
             <li>Update the <code>Play</code> plugin for <code>EmberJS</code>, to support the lastest versions of JQuery and Bootstrap.</li>
             <li>Detection if the browser supports required technologies eg. Orientation API and WebGL.</li>
-            <li>Better handling of WebSockects to ensure reliable connection and auto-reconnects.</li>
+            <li>Better handling of WebSockets to ensure reliable connection and auto-reconnects.</li>
+            <li>Notification if the server is up and running.</li>
         </ul>
 
     </div>
