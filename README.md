@@ -1,7 +1,7 @@
 Reactive Orientation
 ===========
 
-**EmberJS - ThreeJS - WebSockets - Scala - Play / Iteratees -  **
+**EmberJS - ThreeJS - WebSockets - Scala - Play / Iteratees**
 
 A full application stack for a Modern Web application, lets review the components:
 
