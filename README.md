@@ -7,7 +7,7 @@ A full application stack for a reactive application with realt-time WebGL visual
 
 * **HTML 5 API** - 
   *  [HTML 5 Rocks Tutorial](http://www.html5rocks.com/en/tutorials/device/orientation/)
-  *  
+    
 * **EmberJS** - interesting client side javasscript framework for building ambitious webapplications
   *  [http://emberjs.com/](http://emberjs.com/)
 
