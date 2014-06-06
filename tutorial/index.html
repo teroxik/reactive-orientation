@@ -1,13 +1,20 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html>
+<html xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
     <title>Reactive-Orientation</title>
 </head>
 <body>
 <div>
     <h2>Reactive-Orientation</h2>
-    <p>This application shows how simple is to use latest technologies to build a very nice reactive 'modern' application web application comprising of a Client-side JavaScript App built using <code>EmberJS</code> and <code>WebSockets</code> with WebGL <code>ThreeJS</code>, served from the <code>Play 2 Framework</code> and merging data from different sources using <code>Play Iteratees</code> and  <code>Akka</code>.</p>
-    <p>We will start with overall description of the project</p>
+    <p>This template shows how simple it is to use latest technologies to build a very nice modern reactive web application
+        comprising of a Client-side <code>JavaScript</code> App built using <code>EmberJS</code>
+        and <code>WebSockets</code> with WebGL <code>ThreeJS</code>,
+        served from the <code>Play 2 Framework</code> written in <code>Scala</code>
+        which works high velocity data from different sources using
+        <code>Play Iteratees</code> and <code>Akka</code>. The main goal of the template is to show how such
+        non-trivial use case can be implemented very quickly, scalably, understandably and elegantly with just a few lines of
+        code and to describe and explain the solution and possible alternatives with aim to help even complete beginners
+        to understand and start using these technologies.</p>
 </div>
 <div>
     <h2>Preview</h2>
@@ -18,7 +25,7 @@
     </p>
 
     <p>
-        Main functionality of the Play server is to act as a router for web socket messages. It accepts connections on two different web sockets. The first web socket receives messages with data about spatial orientation from an arbitrary number of mobile devices. The server applies transformation function to each message and merges streams of messages from all devices into a single stream which is in turn sent to the other websocket where the data for each individual device are clearly displayed in real time. This is illustrated on the figure below.
+        Main functionality of the Play server is to act as a router for web socket messages. It accepts connections on two different web sockets. The first web socket receives messages with data about spatial orientation from an arbitrary number of mobile devices. Web sockets in combination with orientation data serve as a good descriptive source of data with reasonably high volume and velocity so we can show how these can be handled using the Typesafe platform. The server applies transformation function to each message and merges streams of messages from all devices into a single stream which is in turn sent to the other websocket where the data for each individual device are clearly displayed in real time. This is illustrated on the figure below.
     </p>
 
     <img src="tutorial/marble.png">
@@ -37,8 +44,8 @@
     <h4>Play controller</h4>
 
     <p>
-        The main work of the application happens in Application.scala. This object is the only Play Controller in the whole application. It has three methods. The index method attempts to retrieve network interfaces to be able to present the IP address and then presents index.scala.html view.
-        The most elegant way is to use play actor sockets (introduced in Play 2.3) for connections from mobile devices and Iteratees/Enumerator for dashboard sockets. You can read about both options here https://www.playframework.com/documentation/2.3.x/ScalaWebSockets.
+        The main work of the application happens in <a href="#code/app/controller/Application.scala">Application.scala</a>. This object is the only Play Controller in the whole application. It has three methods. The index method attempts to retrieve network interfaces to be able to present the IP address and then presents <a href="#code/views/index.scala.html">index.scala.html</a> view.
+        The most elegant way is to use play actor sockets (introduced in Play 2.3) for connections from mobile devices and Iteratees/Enumerator for dashboard sockets. You can read about both options in <a href="https://www.playframework.com/documentation/2.3.x/ScalaWebSockets"> Play scala web sockets</a>.
 
         The controller has one instance of Enumerator and one instance of Channel. Messages pushed to the Channel will be received by web sockets using the Enumerator. This is important to understand, because these will be shared by actors that will push messages to the Channel and device websockets who will use the Enumerator.
     </p>
@@ -56,7 +63,7 @@
     </code></pre>
 
     <p>
-       Play automatically sends a message to the actor when a message on the web socket interface is received. The type of the message is specified by the first type parameter of acceptWithActor function.
+       Play automatically sends a message to the specified actor when a message on the web socket interface is received. The type of the message is specified by the first type parameter of acceptWithActor function.
     </p>
 
     <p>
@@ -73,7 +80,7 @@
     </code></pre>
 
     <p>
-        In this case, we would however need to take care of the number of actors manually. One solution would be for example to create a router (http://doc.akka.io/docs/akka/snapshot/scala/routing.html) that distributes incomming messages according to predefined logic. One option to create a router would be to add one actor to the routees with each connection or create a router with a fixed number of actors equal to number of cpu cores available on the machine.
+        In this case, we would however need to take care of the number of actors manually. One solution would be for example to create a <a href="http://doc.akka.io/docs/akka/snapshot/scala/routing.html">Router</a> that distributes incomming messages according to predefined logic. One option to create a router would be to add one actor to the routees with each connection or create a router with a fixed number of actors equal to number of cpu cores available on the machine.
     </p>
 
     <pre><code>
@@ -93,7 +100,7 @@
     </code></pre>
 
     <p>
-        This solution is very elegant and minimal, because we again just use Play to do the hard work. We just use the same channel for each incomming websocket connection. When a message is received from mobile device, the actor that is responsible for handling the message will simply push it to this channel and because it is shared by all Dashboard web sockets, they will automatically all receive the message. In addition, this abstraction very nicely illustrates the intended functionality - messages from multiple devices are merged into one stream! Notice also the Iteratee is ignored (because we are not expecting any messages from the dashboard apart from initial web socket connection). Again this is not the only option and it would be possible implement the same logic using Actor web sockets, but we would have to manually handle the fact that the response is not going to the same socket as the received message.
+        This solution is very elegant and minimal, because we again use Play to do the hard work. We just use the same channel for each incomming websocket connection. When a message is received from mobile device, the actor that is responsible for handling the message will simply push it to this channel and because it is shared by all Dashboard web sockets, they will automatically all receive the message. In addition, this abstraction very nicely illustrates the intended functionality - messages from multiple devices are merged into one stream! Notice also the Iteratee is ignored (because we are not expecting any messages from the dashboard apart from initial web socket connection). Again this is not the only option and it would be possible implement the same logic using Actor web sockets, but we would have to manually handle the fact that the response is not going to the same socket as the received message.
     </p>
 
     <p>
@@ -101,14 +108,14 @@
     </p>
 
     <p>
-        Scala’s ecosystem offers a variety of options to handle this usecase. One notable alternative to Play would be for example Spray (https://github.com/spray/spray).
+        Scala’s ecosystem offers a variety of options to handle this use case. One notable alternative to Play would be for example Spray (https://github.com/spray/spray).
     </p>
 
 
     <h2>Akka actor</h2>
 
     <p>
-        The application only uses one user defined actor. StreamMergingActor’s role is to merge incomming streams from devices and send the resulting stream to dashboards using the share channel. Companion object StreamMergingActor defines messages which the actor understands. OrientationChangeEvent and OrientationChangeData represent one single message received from the mobile device. Each message contains deviceId, information about the device, assigned colour and three values - alpha, beta and gamma - which represent the orientation data and will be explained later. Most important fact is, that the actor holds one instance of Channel[JsValue] called dataChannel which is passed to him in constructor and messages pushed to this channel are sent to all dashboard web socket connections. When a single message from mobile device is received by Play, it is sent to this actor (as an instance of OrientationChangeEvent case class) and the actor simply pushes the message to this channel, thus merging all incoming streams into one.
+        The application only uses one user defined actor located in <a href="#code/actors/StreamMergingActor.scala">StreamMergingActor.scala</a>. StreamMergingActor’s role is to merge incomming streams from devices and send the resulting stream to dashboards using the share channel. Companion object StreamMergingActor defines messages which the actor understands. OrientationChangeEvent and OrientationChangeData represent one single message received from the mobile device. Each message contains deviceId, information about the device, assigned colour and three values - alpha, beta and gamma - which represent the orientation data and will be explained later. Most important fact is, that the actor holds one instance of Channel[JsValue] called dataChannel which is passed to him in constructor and messages pushed to this channel are sent to all dashboard web socket connections. When a single message from mobile device is received by Play, it is sent to this actor (as an instance of OrientationChangeEvent case class) and the actor simply pushes the message to this channel, thus merging all incoming streams into one as described earlier.
     </p>
 
     <pre><code>
@@ -117,13 +124,13 @@
     </code></pre>
 
     <p>
-        The important fact is that all this is non-blocking. Play sends a message using “fire and forget” technique where it is simply telling the actor what needs to be done and does not wait for response (and if one would wait for a response from actor, it would be done in a non-blocking way by simply defining the expected message in receive or by using Future as a representation of asynchronous computation). The message is processed asynchronously to the sender by the actor, usually in different thread.
+        The important fact is that all this is non-blocking. Play sends a message using “fire and forget” technique where it is simply telling the actor what needs to be done and does not wait for response (and if one would wait for a response from actor, it would be done in a non-blocking way by simply defining the expected message in receive function or by using Future as a representation of asynchronous computation as described in the <a href="http://doc.akka.io/docs/akka/snapshot/scala/actors.html">documentation</a>). The message is processed asynchronously to the sender by the actor, usually in different thread.
     </p>
 
     <h4>DegreesToRadiansConversions</h4>
 
     <p>
-        Html5 device orientation events create data about angles in degrees, but three.js library used for display requires data in radians. This gives us an opportunity to apply a transformation function to the data. Trait DegreesToRadiansConversions has one public method called convertDegreesToRadians which converts the angles in data property in OrientationChangeEvent from degrees to radians. Since case classes are immutable, the angle values can not be simply updated and we need to provide a whole new instance of OrientationChangeData. However data property in OrientationChangeEvent is also immutable so we need to provide a new instance of this class too. This is an implication of immutable data structures that may look like a disadvantage, but it actually is not.
+        Html5 device orientation events create data about angles in degrees, but three.js library used for display requires data in radians. This gives us an opportunity to apply a transformation function to the data stream. Trait <a href="#code/app/utils/DegreesToRadiansConversions.scala">DegreesToRadiansConversions</a> has one public method called convertDegreesToRadians which converts the angles in data property in OrientationChangeEvent from degrees to radians. Since case classes are immutable, the angle values can not be simply updated and we need to provide a whole new instance of OrientationChangeData. However data property in OrientationChangeEvent is also immutable so we need to provide a new instance of this class too. This is an implication of immutable data structures that may look like a disadvantage, but it actually is not and accompanies many advantages.
     </p>
 
     <pre><code>
@@ -136,8 +143,8 @@
     </code></pre>
 
     <p>
-        This code is fine, but unnecessary. Updating properties in larger structures could become messy even when the logic would be extracted to a factory class.
-        That is why Scala provides copy method on case classes.
+        This code is fine, but unnecessary. Updating properties in larger structures could become messy even when the logic would be extracted to a kind of factory class.
+        That is why Scala provides copy method on case classes. It creates a new object based on values in the old one and the changes in the selected properties.
     </p>
 
     <p>
@@ -145,13 +152,13 @@
     </p>
 
     <p>
-        This template however uses another approach which utilizes Scalaz library and a concept called lenses known from functional programming. A lens is created by passing get and set functions. We can then use the lens to modify the value viewed through it. Note that the template uses the same data structure for both radians and degrees which may not be the best practice, because the client does not know which value is stored in it. It is used for the opportunity to discuss copy and lenses concepts, but otherwise you may want to distinguish the cases for example by using types, generics or separate classes.
+        This template however uses another approach which utilizes <a href="https://github.com/scalaz/scalaz">Scalaz</a> library and a concept called lenses known from functional programming. A lens is created by passing get and set functions. We can then use the lens to modify the value viewed through it. Scalaz is a library which provides purely functional data structures to complement those from the Scala standard library. Note that the template uses the same data structure for both radians and degrees which may not be the best practice, because the client does not know which value is stored in it. It is used for the opportunity to discuss copy and lenses concepts, but otherwise you may want to distinguish the cases for example by using types, generics or separate classes.
     </p>
 
     <h4>IpAddress trait</h4>
 
     <p>
-        This trait provides functionality to retrieve ip address. The most interesting thing here to note is how easily can Java functions be used in Scala. Java collections are transformed to Scala collections using asScala and therefore they can then be cleanly manipulated using map and flatMap. The trait also uses Validation from Scalaz to handle errors encountered during the address retrieval. Scalaz is a library which provides purely functional data structures to complement those from the Scala standard library (https://github.com/scalaz/scalaz). In this case, it is used instead of try-catch block well known from most OO languages, because  Validation makes error handling more explicit, readable and provides a nice api for composition of multiple errors. Other alternatives to consider for this purpose are Scala’s Try and Either.
+        Trait <a href="#code/app/utils/IpAddress.scala">IpAddress</a> provides functionality to retrieve ip address. The most interesting thing here to note is how easily can Java functions be used in Scala. Java collections are transformed to Scala collections using asScala and therefore they can then be cleanly manipulated using Scala's collection transformations like map and flatMap. The trait also uses Validation from Scalaz to handle errors encountered during the address retrieval. Scalaz is a library which provides purely functional data structures to complement those from the Scala standard library (https://github.com/scalaz/scalaz). In this case, it is used instead of try-catch block well known from most OO languages, because  Validation makes error handling more explicit, readable and provides a nice api for composition of multiple errors. Other alternatives to consider for this purpose are Scala’s Try and Either.
     </p>
 
     <p>
@@ -171,7 +178,7 @@
     </code></pre>
 
     <p>
-        both require an implicit frameFormatter. It is provided by importing JsonFormats to scope.
+        both require an implicit parameter called frameFormatter. It is provided by importing object <a href="#code/app/json/JsonFormats.scala">JsonFormats</a> to scope and Scala compiler will inject the implicit parameter for us.
     </p>
 
     <pre><code>
@@ -198,17 +205,17 @@
     <h2>System overview - Client</h2>
 
     <p>
-        The client application runs in browser and is built on one of the major javascript MVC-like frameworks, Ember.js (http://emberjs.com/). It also uses Ember.js plugin to enable simple compilation of handlebars templates (https://github.com/krumpi/play-emberjs/). All required javascripts all simply included as files in index.scala.html returned by the index method of Application object.
+        The client application runs in browser and is built on one of the major javascript MVC-like frameworks, <a href="http://emberjs.com/">Ember.js</a>. It also uses <a href="https://github.com/krumpi/play-emberjs/">Ember.js plugin</a> to enable simple compilation of handlebars templates. All required javascripts all simply included as files in <a href="#code/app/views/index.scala.html">index.scala.html</a> returned by the index method of previously discussed <a href="#code/app/controllers/Application.scala">Application</a> controller.
     </p>
 
     <p>
-        The main Ember application entry point is in app.js where Ember itself and routes are initialized. The whole application uses two controllers - indexController as default controller for Dashboard and deviceController for the Device tab.
+        The main Ember application entry point is in <a href="#code/public/javascripts/app/app.js">app.js</a> where Ember itself and routes are initialized. The whole application uses two controllers - indexController as default controller for Dashboard and deviceController for the Device tab.
     </p>
 
     <h4>Mobile device</h4>
 
     <p>
-        The DeviceController has 3 important properties startOn flag saying if the data are being sent, socket which is the websocket object and orientation which represents current set of device’s orientation data. A handlebars template device.handlebars is used as a view for this controller. Important thing to note here is that Ember controller properties are accessible from the view and Ember automatically binds their state and updates the view when they are changed. Ember also provides set of standard tools for data access called Ember-data (http://emberjs.com/guides/models/). For sake of simplicity of code and clarity of the intended functionality, the web socket interactions are handled manually in this template.
+        The <a href="#code/public/javascripts/app/deviceController.js">DeviceController</a> has 3 important properties startOn flag saying if the data are being sent, socket which is the websocket object and orientation which represents current set of device’s orientation data. A handlebars template device.handlebars is used as a view for this controller. Important thing to note here is that Ember controller properties are accessible from the view and Ember automatically binds their state and updates the view when they are changed. Ember also provides set of standard tools for data access called Ember-data (<a href="http://emberjs.com/guides/models/">Ember-data</a>). For sake of simplicity of code and clarity of the intended functionality, the web socket interactions are handled manually in this template.
         The controllers subscribes to deviceorientation event which triggers every time you move your device. When this happens, the properties of the controller are updated (and therefore the values re-rendered in the view). Html5 provides this api to be able to use data from device's orientation sensors in a browser. It provides values alpha, beta and gamma which represent rotation through angle about axes. The specification can be found on www.w3.org/TR/orientation-event. There are some differences between browsers, but method calculateEulerOrientationForDevice in orientation module handles that.
     </p>
 
@@ -241,7 +248,7 @@
     <h4>Dashboard</h4>
 
     <p>
-       The indexController is a bit more complicated, but still understandable. Important thing to note is that it extends ArrayController, which means it can contain array of models instead of just one or none. Content property is initialized to empty array. This array will include list of active devices. Index.handlebars view is a template for this route. The {{#each}} is used to render the whole array of models stored in controller and their selected properties. Each model also has an empty div called canvas where the orientation data will be visually displayed when available.
+       The <a href="#code/public/javascripts/app/indexController.js">indexController</a> is a bit more complicated, but still easily understandable. Important thing to note is that it extends <code>ArrayController</code>, which means it can contain array of models instead of just one or none. Content property is initialized to empty array. This array will include list of active devices. Index.handlebars view is a template for this route. The <code>{{#each}}</code> is used to render the whole array of models stored in controller and their selected properties. Each model also has an empty div called canvas where the orientation data will be visually displayed when available.
     </p>
 
     <p>
@@ -263,7 +270,7 @@
     </p>
 
     <p>
-        The majority of the work described above is done by handleWebSocketReceivedMessage function which is triggered with each received web socket message. The methods to create and update device object are extracted to Device module located in device.js file. Notice objects are created using Ember.Object.create() function which takes javascript object as parameter. Property values that are dynamically updated are updated using set method which ensures the values are bound and updated properly.
+        The majority of the work described above is done by <code>handleWebSocketReceivedMessage</code> function which is triggered with each received web socket message. The methods to create and update device object are extracted to Device module located in device.js file. Notice objects are created using Ember.Object.create() function which takes javascript object as parameter. Property values that are dynamically updated are updated using set method which ensures the values are bound and updated properly.
     </p>
 
     <img src="tutorial/dashboard.png" >
@@ -272,7 +279,7 @@
     <h2>Graphical representation</h2>
 
     <p>
-        An impressive javascript library three.js (http://threejs.org/) is used for graphical representation of the orientation data. This library aims to provide 3D graphics in a browser. Most of the functionality was extracted to Orientation module in orientation.js. It contains functions to initialize the drawing canvas (createCanvas), create objects (createCube), transformations to achieve rotation around world axes (setObjectQuaternion) and extracting device’s orientation data (calculateEulerOrientationForDevice). The canvas is then attached to the DOM (the empty div in index.handlebars) mentioned earlier in indexController’s handleWebSocketReceivedMessage function.
+        An impressive javascript library <a href="http://threejs.org/">three.js</a> is used for graphical representation of the orientation data. This library aims to provide 3D graphics in a browser. Most of the functionality was extracted to <a href="#code/public/javascripts/app/orientation.js">Orientation</a> module. It contains functions to initialize the drawing canvas (createCanvas), create objects (createCube), transformations to achieve rotation around world axes (setObjectQuaternion) and extracting device’s orientation data (calculateEulerOrientationForDevice). The canvas is then attached to the DOM (the empty div in index.handlebars) mentioned earlier in indexController’s handleWebSocketReceivedMessage function.
     </p>
 
     <code>canvas.appendChild(renderer.domElement)</code>
@@ -287,7 +294,7 @@
     <h2>Conclusion</h2>
 
     <p>
-        In conclusion, I would like to ask you to think about what the template achieves. Notice Play is not just a server providing resources on endpoints. It acts as a server and router for messages which can also apply transformations on them. It would also be possible to cooperate with other services and applications. All in a reactive way. Where else can Play and web sockets (or even different protocol) be used? How difficult would it be for example to create a 2d, isometric projection or even a 3d racing game using the Play server we already have? Wouldn’t it be achievable by just changing the javascript front end? Or a message queue? Or an ESB?
+        In conclusion, notice what the template achieves. Play is not just a server providing resources on endpoints. It acts as a server and router for messages which can also apply transformations on them. It would also be possible to cooperate with other services and applications. All in a reactive way. Where else can Play and web sockets (or even different protocol) be used? How difficult would it be for example to create a 2d, isometric projection or even a 3d racing game using the Play server we already have? Wouldn’t it be achievable by just changing the javascript front end? Or a message queue? Or an enterprise service bus?
     </p>
 
     <p>
