@@ -6,15 +6,14 @@
 <body>
 <div>
     <h2>Reactive-Orientation</h2>
-    <p>This template shows how simple it is to use latest technologies to build a very nice modern reactive web application
+    <p>This template shows how simple it is to use latest technologies to build a nice modern reactive web application
         comprising of a Client-side <code>JavaScript</code> App built using <code>EmberJS</code>
         and <code>WebSockets</code> with WebGL <code>ThreeJS</code>,
         served from the <code>Play 2 Framework</code> written in <code>Scala</code>
         which works high velocity data from different sources using
-        <code>Play Iteratees</code> and <code>Akka</code>. The main goal of the template is to show how such
-        non-trivial use case can be implemented very quickly, scalably, understandably and elegantly with just a few lines of
-        code and to describe and explain the solution and possible alternatives with aim to help even complete beginners
-        to understand and start using these technologies.</p>
+        <code>Play Iteratees</code> and <code>Akka</code>.
+        One of the main goals of this template is to show how such non-trivial application can be written very quickly, elegantly, readably and scalably with just a few lines of code using the Typesafe technologies and to describe and discuss the concepts, technologies, various alternatives that are provided to programmer to meet the goals, provide resources for further education and to help even beginners to start with or improve in using these technologies.
+        </p>
 </div>
 <div>
     <h2>Preview</h2>
@@ -30,13 +29,9 @@
 
     <img src="tutorial/marble.png">
 
-    <p>
-        One of the main goals of this template is to show how such non-trivial application can be written in a very elegant and readable way with just a few lines of code and to show and discuss the concepts, technologies, various options that are provided to programmer to meet the goals, provide resources for further education and to help programmers start with or improve in using these technologies.
-    </p>
-
     <h2>Usage</h2>
     <p>
-        Go to Run tab in Activator and start the application and then visit <code>http://localhost:9000</code>. Another option is to start the application from linux terminal using activator run command for Play 2.3. After the application startup, you will be presented by the Dashboard page and IP address of the machine in network. This is because you will need to connect to the Play server from other devices. In real life the application would be deployed in the internet so you would just need to enter the url. This case  however requires you to enter the local network address, including port (default 9000) to your mobile device’s browser - for example <code>192.168.0.10:9000</code>. When the page is loaded, select Device tab and click the Start button. If the device supports orientation sensor, it should start sending data to the server. The Dashboard page will show real time information including visualisation of the device’s orientation. Each device connected will be presented individually. After certain time of inactivity the device is removed from the Dashboard. Note the visualisation may not be exactly correct, because the alpha represents the angle to north so you may need to adjust your screen with Dashboard manually.
+        Go to Run tab in Activator and start the application and then visit <a href="http://localhost:9000">http://localhost:9000</a>. Another option is to start the application from linux terminal using activator run command for Play 2.3. After the application startup, you will be presented by the Dashboard page and IP address of the machine in network. This is because you will need to connect to the Play server from other devices. In real life the application would be deployed in the internet so you would just need to enter the url. This case  however requires you to enter the local network address, including port (default 9000) to your mobile device’s browser - for example <code>192.168.0.10:9000</code>. When the page is loaded, select Device tab and click the Start button. If the device supports orientation sensor, it should start sending data to the server. The Dashboard page will show real time information including visualisation of the device’s orientation. Each device connected will be presented individually. After certain time of inactivity the device is removed from the Dashboard. Note the visualisation may not be exactly correct, because the alpha represents the angle to north so you may need to adjust your screen with Dashboard manually.
     </p>
 </div>
 <div>
@@ -44,7 +39,7 @@
     <h4>Play controller</h4>
 
     <p>
-        The main work of the application happens in <a href="#code/app/controller/Application.scala">Application.scala</a>. This object is the only Play Controller in the whole application. It has three methods. The index method attempts to retrieve network interfaces to be able to present the IP address and then presents <a href="#code/views/index.scala.html">index.scala.html</a> view.
+        The main work of the application happens in <a href="#code/app/controller/Application.scala">Application.scala</a>. This object is the only Play Controller in the whole application. It has three methods. The <code>index</code> method attempts to retrieve network interfaces to be able to present the IP address and then presents <a href="#code/views/index.scala.html">index.scala.html</a> view.
         The most elegant way is to use play actor sockets (introduced in Play 2.3) for connections from mobile devices and Iteratees/Enumerator for dashboard sockets. You can read about both options in <a href="https://www.playframework.com/documentation/2.3.x/ScalaWebSockets"> Play scala web sockets</a>.
 
         The controller has one instance of Enumerator and one instance of Channel. Messages pushed to the Channel will be received by web sockets using the Enumerator. This is important to understand, because these will be shared by actors that will push messages to the Channel and device websockets who will use the Enumerator.
@@ -53,7 +48,7 @@
     <code>val (dataEnumerator, dataChannel) = Concurrent.broadcast[JsValue]</code>
 
     <p>
-        Method mobileWebSocket is triggered when a new web socket connection is started from the mobile device. When using actor sockets, Play automatically creates one actor for each connection on the web socket. This is a very convenient way to scale - because actors can run in parallel and have nicely distributed responsibility - having as much actors as devices won’t create a performance bottleneck or a single point of failure.
+        Method <code>mobileWebSocket</code> is triggered when a new web socket connection is started from the mobile device. When using actor sockets, Play automatically creates one actor for each connection on the web socket. This is a very convenient way to scale - because actors can run in parallel and have nicely distributed responsibility - having as much actors as devices won’t create a performance bottleneck or a single point of failure.
     </p>
 
     <pre><code>
@@ -63,7 +58,7 @@
     </code></pre>
 
     <p>
-       Play automatically sends a message to the specified actor when a message on the web socket interface is received. The type of the message is specified by the first type parameter of acceptWithActor function.
+       Play automatically sends a message to the specified actor when a message on the web socket interface is received. The type of the message is specified by the first type parameter of <code>acceptWithActor</code> function.
     </p>
 
     <p>
@@ -90,7 +85,7 @@
     </code></pre>
 
     <p>
-        Method dashboardWebSocket manages web socket connections from dashboard page using Iteratee and Enumerator. Iteratee is a representation of incomming message stream and Enumerator of the outgoing. The code handling web sockets from dashboard using Iteratees and Enumerators may look like this.
+        Method <code>dashboardWebSocket</code> manages web socket connections from dashboard page using Iteratee and Enumerator. Iteratee is a representation of incomming message stream and Enumerator of the outgoing. The code handling web sockets from dashboard using Iteratees and Enumerators may look like this.
     </p>
 
     <pre><code>
@@ -108,14 +103,14 @@
     </p>
 
     <p>
-        Scala’s ecosystem offers a variety of options to handle this use case. One notable alternative to Play would be for example Spray (https://github.com/spray/spray).
+        Scala’s ecosystem offers a variety of options to handle this use case. One notable alternative to Play would be for example <a href="https://github.com/spray/spray">Spray</a>.
     </p>
 
 
     <h2>Akka actor</h2>
 
     <p>
-        The application only uses one user defined actor located in <a href="#code/actors/StreamMergingActor.scala">StreamMergingActor.scala</a>. StreamMergingActor’s role is to merge incomming streams from devices and send the resulting stream to dashboards using the share channel. Companion object StreamMergingActor defines messages which the actor understands. OrientationChangeEvent and OrientationChangeData represent one single message received from the mobile device. Each message contains deviceId, information about the device, assigned colour and three values - alpha, beta and gamma - which represent the orientation data and will be explained later. Most important fact is, that the actor holds one instance of Channel[JsValue] called dataChannel which is passed to him in constructor and messages pushed to this channel are sent to all dashboard web socket connections. When a single message from mobile device is received by Play, it is sent to this actor (as an instance of OrientationChangeEvent case class) and the actor simply pushes the message to this channel, thus merging all incoming streams into one as described earlier.
+        The application only uses one user defined actor located in <a href="#code/actors/StreamMergingActor.scala">StreamMergingActor.scala</a>. <code>StreamMergingActor</code>’s role is to merge incomming streams from devices and send the resulting stream to dashboards using the share channel. Companion object <code>StreamMergingActor</code> defines messages which the actor understands. <code>OrientationChangeEvent</code> and <code>OrientationChangeData</code> represent one single message received from the mobile device. Each message contains deviceId, information about the device, assigned colour and three values - alpha, beta and gamma - which represent the orientation data and will be explained later. Most important fact is, that the actor holds one instance of Channel[JsValue] called <code>dataChannel</code> which is passed to him in constructor and messages pushed to this channel are sent to all dashboard web socket connections. When a single message from mobile device is received by Play, it is sent to this actor (as an instance of <code>OrientationChangeEvent</code> case class) and the actor simply pushes the message to this channel, thus merging all incoming streams into one as described earlier.
     </p>
 
     <pre><code>
@@ -130,7 +125,7 @@
     <h4>DegreesToRadiansConversions</h4>
 
     <p>
-        Html5 device orientation events create data about angles in degrees, but three.js library used for display requires data in radians. This gives us an opportunity to apply a transformation function to the data stream. Trait <a href="#code/app/utils/DegreesToRadiansConversions.scala">DegreesToRadiansConversions</a> has one public method called convertDegreesToRadians which converts the angles in data property in OrientationChangeEvent from degrees to radians. Since case classes are immutable, the angle values can not be simply updated and we need to provide a whole new instance of OrientationChangeData. However data property in OrientationChangeEvent is also immutable so we need to provide a new instance of this class too. This is an implication of immutable data structures that may look like a disadvantage, but it actually is not and accompanies many advantages.
+        Html5 device orientation events create data about angles in degrees, but three.js library used for display requires data in radians. This gives us an opportunity to apply a transformation function to the data stream. Trait <a href="#code/app/utils/DegreesToRadiansConversions.scala">DegreesToRadiansConversions</a> has one public method called <code>convertDegreesToRadians</code> which converts the angles in data property in <code>OrientationChangeEvent</code> from degrees to radians. Since case classes are immutable, the angle values can not be simply updated and we need to provide a whole new instance of <code>OrientationChangeData</code>. However data property in <code>OrientationChangeEvent</code> is also immutable so we need to provide a new instance of this class too. This is an implication of immutable data structures that may look like a disadvantage, but it actually is not and accompanies many advantages.
     </p>
 
     <pre><code>
@@ -147,9 +142,9 @@
         That is why Scala provides copy method on case classes. It creates a new object based on values in the old one and the changes in the selected properties.
     </p>
 
-    <p>
+    <pre><code>
         event.copy(data =  OrientationChangeData(math.toRadians(event.data.alpha), math.toRadians(event.data.beta), math.toRadians(event.data.gamma)))
-    </p>
+    </code></pre>
 
     <p>
         This template however uses another approach which utilizes <a href="https://github.com/scalaz/scalaz">Scalaz</a> library and a concept called lenses known from functional programming. A lens is created by passing get and set functions. We can then use the lens to modify the value viewed through it. Scalaz is a library which provides purely functional data structures to complement those from the Scala standard library. Note that the template uses the same data structure for both radians and degrees which may not be the best practice, because the client does not know which value is stored in it. It is used for the opportunity to discuss copy and lenses concepts, but otherwise you may want to distinguish the cases for example by using types, generics or separate classes.
@@ -158,12 +153,12 @@
     <h4>IpAddress trait</h4>
 
     <p>
-        Trait <a href="#code/app/utils/IpAddress.scala">IpAddress</a> provides functionality to retrieve ip address. The most interesting thing here to note is how easily can Java functions be used in Scala. Java collections are transformed to Scala collections using asScala and therefore they can then be cleanly manipulated using Scala's collection transformations like map and flatMap. The trait also uses Validation from Scalaz to handle errors encountered during the address retrieval. Scalaz is a library which provides purely functional data structures to complement those from the Scala standard library (https://github.com/scalaz/scalaz). In this case, it is used instead of try-catch block well known from most OO languages, because  Validation makes error handling more explicit, readable and provides a nice api for composition of multiple errors. Other alternatives to consider for this purpose are Scala’s Try and Either.
+        Trait <a href="#code/app/utils/IpAddress.scala">IpAddress</a> provides functionality to retrieve ip address. The most interesting thing here to note is how easily can Java functions be used in Scala. Java collections are transformed to Scala collections using asScala and therefore they can then be cleanly manipulated using Scala's collection transformations like map and flatMap. The trait also uses Validation from Scalaz to handle errors encountered during the address retrieval. In this case, it is used instead of try-catch block well known from most OO languages, because  Validation makes error handling more explicit, readable and provides a nice api for composition of multiple errors. Other alternatives to consider for this purpose are Scala’s Try and Either.
     </p>
 
-    <p>
+    <pre><code>
         Validation.fromTryCatch( … )
-    </p>
+    </code></pre>
 
     <h4>Json marshalling</h4>
 
@@ -178,7 +173,7 @@
     </code></pre>
 
     <p>
-        both require an implicit parameter called frameFormatter. It is provided by importing object <a href="#code/app/json/JsonFormats.scala">JsonFormats</a> to scope and Scala compiler will inject the implicit parameter for us.
+        both require an implicit parameter called FrameFormatter. It is provided by importing object <a href="#code/app/json/JsonFormats.scala">JsonFormats</a> to scope and Scala compiler will inject the implicit parameter for us.
     </p>
 
     <pre><code>
@@ -189,9 +184,9 @@
         All the case classes we use to represent web socket messages can be marshalled and unmarshalled using the default formats.
     </p>
 
-    <p>
+    <pre><code>
         implicit val eventDataJsonFormat = Json.format[OrientationChangeData]
-    </p>
+    </code></pre>
 
     <p>
         For more complicated cases, you can write your own format definition.
@@ -215,8 +210,8 @@
     <h4>Mobile device</h4>
 
     <p>
-        The <a href="#code/public/javascripts/app/deviceController.js">DeviceController</a> has 3 important properties startOn flag saying if the data are being sent, socket which is the websocket object and orientation which represents current set of device’s orientation data. A handlebars template device.handlebars is used as a view for this controller. Important thing to note here is that Ember controller properties are accessible from the view and Ember automatically binds their state and updates the view when they are changed. Ember also provides set of standard tools for data access called Ember-data (<a href="http://emberjs.com/guides/models/">Ember-data</a>). For sake of simplicity of code and clarity of the intended functionality, the web socket interactions are handled manually in this template.
-        The controllers subscribes to deviceorientation event which triggers every time you move your device. When this happens, the properties of the controller are updated (and therefore the values re-rendered in the view). Html5 provides this api to be able to use data from device's orientation sensors in a browser. It provides values alpha, beta and gamma which represent rotation through angle about axes. The specification can be found on www.w3.org/TR/orientation-event. There are some differences between browsers, but method calculateEulerOrientationForDevice in orientation module handles that.
+        The <a href="#code/public/javascripts/app/deviceController.js">DeviceController</a> has 3 important properties startOn flag saying if the data are being sent, socket which is the websocket object and orientation which represents current set of device’s orientation data. A handlebars template <a href="#code/app/assets/templates/device.handlebars">device.handlebars</a> is used as a view for this controller. Important thing to note here is that Ember controller properties are accessible from the view and Ember automatically binds their state and updates the view when they are changed. Ember also provides set of standard tools for data access called <a href="http://emberjs.com/guides/models/">Ember-data</a>. For sake of simplicity of code and clarity of the intended functionality, the web socket interactions are handled manually in this template.
+        The controllers subscribes to <code>deviceorientation</code> event which triggers every time you move your device. When this happens, the properties of the controller are updated (and therefore the values re-rendered in the view). Html5 provides this api to be able to use data from device's orientation sensors in a browser. It provides values alpha, beta and gamma which represent rotation through angle about axes. The specification can be found at <a href="www.w3.org/TR/orientation-event">www.w3.org</a>. There are some differences between browsers, but method <code>calculateEulerOrientationForDevice</code> in orientation module handles that.
     </p>
 
     <img src="tutorial/device.png" >
@@ -234,7 +229,7 @@
     </code></pre>
 
     <p>
-        We refer to the values by self, because they are properties of the controller to be simply displayed on the device page. Apart from orientationData, they are all static and only change when the page is reloaded. OrientationData on the other hand are calculated with each change of device’s orientation. Device info contains data about the device - model, type, vendor, os or browser and version etc which are retrieved using the ua-parser-js project (https://github.com/faisalman/ua-parser-js). These informations are used to create unique deviceId and colour by adding a current timestamp and using an appropriate hash function to convert string to colour. These properties are then used to identify the device throughout the application. Uniqueness provided by this approach is sufficient for this template. After that, the data are sent to the Play server’s device web socket.
+        We refer to the values by self, because they are properties of the controller to be simply displayed on the device page. Apart from <code>orientationData</code>, they are all static and only change when the page is reloaded. <code>OrientationData</code> on the other hand are calculated with each change of device’s orientation. Device info contains data about the device - model, type, vendor, os or browser and version etc which are retrieved using the <a href="https://github.com/faisalman/ua-parser-js">ua-parser-js project</a>. These informations are used to create unique deviceId and colour by adding a current timestamp and using an appropriate hash function to convert string to colour. These properties are then used to identify the device throughout the application. Uniqueness provided by this approach is sufficient for this template. After that, the data are sent to the Play server’s device web socket.
     </p>
 
     <pre><code>
@@ -242,13 +237,13 @@
     </code></pre>
 
     <p>
-        Other important parts of the controller are the init function which executes on initialization of the controller and methods in actions object which are used to controll user actions in Ember. Notice one of two (Start or Stop) buttons displayed in device.handlebars view. Click on them executes start and stop action respectively.
+        Other important parts of the controller are the init function which executes on initialization of the controller and methods in actions object which are used to control user actions in Ember. Notice one of two (Start or Stop) buttons displayed in device.handlebars view. Click on them executes start and stop action respectively.
     </p>
 
     <h4>Dashboard</h4>
 
     <p>
-       The <a href="#code/public/javascripts/app/indexController.js">indexController</a> is a bit more complicated, but still easily understandable. Important thing to note is that it extends <code>ArrayController</code>, which means it can contain array of models instead of just one or none. Content property is initialized to empty array. This array will include list of active devices. Index.handlebars view is a template for this route. The <code>{{#each}}</code> is used to render the whole array of models stored in controller and their selected properties. Each model also has an empty div called canvas where the orientation data will be visually displayed when available.
+       The <a href="#code/public/javascripts/app/indexController.js">indexController</a> is a bit more complicated, but still easily understandable. Important thing to note is that it extends ArrayController, which means it can contain array of models instead of just one or none. Content property is initialized to empty array. This array will include list of active devices. <a href="#code/app/assets/templates/index.handlebars">Index.handlebars</a> view is a template for this route. The <code>{{#each}}</code> is used to render the whole array of models stored in controller and their selected properties. Each model also has an empty div called canvas where the orientation data will be visually displayed when available.
     </p>
 
     <p>
@@ -263,14 +258,16 @@
         or update their orientation values (if the device is already in the content array).
     </p>
 
-    <code>device = Device.update(item, json);</code>
+    <pre><code>
+        device = Device.update(item, json);
+    </code></pre>
 
     <p>
-        EmberJs is able to bind and re-render relevant parts of the view even if just values of nested object properties in an array change. This provides sufficient performance for multiple displayed devices. An algorithmically simpler, but less performant solution would be to set the whole content array. We use device property of the message to uniquely identify each device. A timestamp is also saved in Device.update function to mark when were last data from each device received. Inactive devices are periodically scanned by removeUnusedDevicesTimer and removed from the array.
+        Ember is able to bind and re-render relevant parts of the view even if just values of nested object properties in an array change. This provides sufficient performance for multiple displayed devices. An algorithmically simpler, but less performant solution would be to set the whole content array. We use device property of the message to uniquely identify each device. A timestamp is also saved in <code>Device.update</code> function to mark when were last data from each device received. Inactive devices are periodically scanned by <code>removeUnusedDevicesTimer</code> and removed from the array.
     </p>
 
     <p>
-        The majority of the work described above is done by <code>handleWebSocketReceivedMessage</code> function which is triggered with each received web socket message. The methods to create and update device object are extracted to Device module located in device.js file. Notice objects are created using Ember.Object.create() function which takes javascript object as parameter. Property values that are dynamically updated are updated using set method which ensures the values are bound and updated properly.
+        The majority of the work described above is done by <code>handleWebSocketReceivedMessage</code> function which is triggered with each received web socket message. The methods to create and update device object are extracted to Device module located in <a href="#code/public/javascripts/app/device.js">device.js</a> file. Notice objects are created using <code>Ember.Object.create()</code> function which takes javascript object as parameter. Property values that are dynamically updated are updated using set method which ensures the values are bound and updated properly.
     </p>
 
     <img src="tutorial/dashboard.png" >
@@ -279,13 +276,15 @@
     <h2>Graphical representation</h2>
 
     <p>
-        An impressive javascript library <a href="http://threejs.org/">three.js</a> is used for graphical representation of the orientation data. This library aims to provide 3D graphics in a browser. Most of the functionality was extracted to <a href="#code/public/javascripts/app/orientation.js">Orientation</a> module. It contains functions to initialize the drawing canvas (createCanvas), create objects (createCube), transformations to achieve rotation around world axes (setObjectQuaternion) and extracting device’s orientation data (calculateEulerOrientationForDevice). The canvas is then attached to the DOM (the empty div in index.handlebars) mentioned earlier in indexController’s handleWebSocketReceivedMessage function.
+        An impressive javascript library <a href="http://threejs.org/">three.js</a> is used for graphical representation of the orientation data. This library aims to provide 3D graphics in a browser. Most of the functionality was extracted to <a href="#code/public/javascripts/app/orientation.js">orientation.js</a> module. It contains functions to initialize the drawing canvas (<code>createCanvas</code>), create objects (<code>createCube</code>), transformations to achieve rotation around world axes (<code>setObjectQuaternion</code>) and extracting device’s orientation data (<code>calculateEulerOrientationForDevice</code>). The canvas is then attached to the DOM (the empty div in <a href="#code/app/assets/templates/index.handlebars">index.handlebars</a>) mentioned earlier in indexController’s <code>handleWebSocketReceivedMessage</code> function.
     </p>
 
-    <code>canvas.appendChild(renderer.domElement)</code>
+    <pre><code>
+        canvas.appendChild(renderer.domElement)
+    </code></pre>
 
     <p>
-        Calls to <code>Device.update()</code> function then dynamically update the rotation of the displayed object by using Orientation.setObjectQuaternion() function.
+        Calls to <code>Device.update()</code> function then dynamically update the rotation of the displayed object by using <code>Orientation.setObjectQuaternion()</code> function.
     </p>
 
     <h2>TODO</h2>
@@ -298,11 +297,11 @@
     </p>
 
     <p>
-       Can we do better? There is always space for improvements that could be made.
+       Can we do better? There is always space for improvements.
     </p>
 
         <ul>
-            <li>Update the <code>Play</code> plugin for <code>EmberJS</code>, to support the lastest versions of JQuery and Bootstrap.</li>
+            <li>Update the Play plugin for EmberJS to support the latest versions of JQuery and Bootstrap.</li>
             <li>Detection if the browser supports required technologies eg. Orientation API and WebGL.</li>
             <li>Better handling of WebSockects to ensure reliable connection and auto-reconnects.</li>
         </ul>
