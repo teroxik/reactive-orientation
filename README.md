@@ -1,11 +1,11 @@
 Reactive Orientation
 ===========
 
-**HTML 5 Device Orientation API - EmberJS - ThreeJS - WebSockets - Scala - Play / Iteratees / ScalaWebSockets**
+**HTML 5 Device Orientation API - EmberJS - ThreeJS - WebSockets - Scala - Play**
 
 A full application stack for a reactive application with realt-time WebGL visualization, lets review the components:
 
-* **HTML 5 API** - 
+* **HTML 5 API** - WebSockets, HTML 5 Device Orientation API
   *  [HTML 5 Rocks Tutorial](http://www.html5rocks.com/en/tutorials/device/orientation/)
     
 * **EmberJS** - interesting client side javasscript framework for building ambitious webapplications
