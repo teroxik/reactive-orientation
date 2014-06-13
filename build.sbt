@@ -8,6 +8,6 @@ libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-core" % "7.0.6"
 )
 
-emberJsVersion := "1.5.1"
+emberJsVersion := "1.4.0"
 
 lazy val root = (project in file(".")).enablePlugins(PlayScala)
