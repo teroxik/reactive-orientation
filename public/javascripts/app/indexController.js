@@ -49,12 +49,12 @@
 
             self.get('content').forEach(function(item) {
                 if(item.get('deviceId') === json.deviceId) {
-                    device = Device.update(item, json);
+                    device = DeviceServiceDe.update(item, json);
                 }
             });
 
             if(!alreadyExists(device)) {
-                self.get('content').pushObject(Device.create(json));
+                self.get('content').pushObject(DeviceService.create(json));
             }
 
             if(alreadyExists(device) && !alreadyExists(device.renderer)) {
