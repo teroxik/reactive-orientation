@@ -31,9 +31,9 @@
 
             var self = this;
             Ember.run.later(this, function() {
-                self.get('content').forEach(function(device) {
+                self.store.all('device').forEach(function(device) {
                     if(!deviceDataUpdatedInSeconds(device, 2)) {
-                        self.get('content').removeObject(device);
+                        //self.get('content').removeObject(device);
                     }
                 });
 
@@ -45,31 +45,27 @@
             var self = this;
             var json = JSON.parse(event.data);
 
-            var device = undefined;
+            if(self.store.hasRecordForId('device', json.deviceId)) {
+                self.store.find('device', json.deviceId).then(function(device) {
+                    DeviceService.update(device, json);
 
-            self.get('content').forEach(function(item) {
-                if(item.get('deviceId') === json.deviceId) {
-                    device = DeviceServiceDe.update(item, json);
-                }
-            });
+                    if(!alreadyExists(device.renderer)) {
+                        var canvas = document.getElementById('canvas' + device.deviceId);
 
-            if(!alreadyExists(device)) {
-                self.get('content').pushObject(DeviceService.create(json));
-            }
+                        if(canvasAlreadyRendered(canvas)) {
+                            var renderer = Orientation.createCanvas(device.cube);
+                            device.set('renderer', renderer);
 
-            if(alreadyExists(device) && !alreadyExists(device.renderer)) {
-                var canvas = document.getElementById('canvas' + device.deviceId);
-
-                if(canvasAlreadyRendered(canvas)) {
-                    var renderer = Orientation.createCanvas(device.cube);
-                    device.set('renderer', renderer);
-
-                    try {
-                        canvas.appendChild(renderer.domElement)
-                    } catch (e) {
-                        self.get('content').removeObject(device);
+                            try {
+                                canvas.appendChild(renderer.domElement)
+                            } catch (e) {
+                                self.get('content').removeObject(device);
+                            }
+                        }
                     }
-                }
+                });
+            } else {
+                DeviceService.create(self.store, json)
             }
 
             function alreadyExists(obj) {

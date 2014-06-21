@@ -1,14 +1,17 @@
 App.Device = DS.Model.extend({
-  deviceId: attr('string'),
-  colour: attr('string'),
-  updated: attr('date'),
-  cube: attr(),
-  renderer: attr(),
-  data: DS.belongsTo('orientationdata')
+  deviceId: DS.attr('string'),
+  colour: DS.attr('string'),
+  updated: DS.attr('date'),
+  cube: DS.attr(),
+  renderer: DS.attr(),
+  orientationData: DS.belongsTo('orientationdata')
 });
 
-App.OrientationData = DS.Model.extend({
-  alpha: attr('number'),
-  beta: attr('number'),
-  gamma: attr('number')
+App.Orientationdata = DS.Model.extend({
+  alpha: DS.attr('number'),
+  beta: DS.attr('number'),
+  gamma: DS.attr('number')
 });
+
+App.Device.FIXTURES = [];
+App.Orientationdata.FIXTURES = [];

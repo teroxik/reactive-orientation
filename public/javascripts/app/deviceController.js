@@ -49,7 +49,7 @@ App.DeviceController = Ember.ObjectController.extend({
                         deviceInfo: self.model.deviceInfo,
                         deviceId: self.model.deviceId,
                         colour: self.model.colour,
-                        data: orientationData
+                        orientationData: orientationData
                     };
 
                     self.set('model', data)

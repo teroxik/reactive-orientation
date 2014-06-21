@@ -3,9 +3,9 @@ var DeviceService = (function() {
 
         this.update = function(item, orientationData) {
             item.set('updated', Date.now());
-            item.data.set('alpha', orientationData.data.alpha);
-            item.data.set('beta', orientationData.data.beta);
-            item.data.set('gamma', orientationData.data.gamma);
+            item.orientationData.set('alpha', orientationData.data.alpha);
+            item.orientationData.set('beta', orientationData.data.beta);
+            item.orientationData.set('gamma', orientationData.data.gamma);
 
             Orientation.setObjectQuaternion(
                 item.cube.quaternion,
@@ -16,8 +16,22 @@ var DeviceService = (function() {
             return item;
         };
 
-        this.create = function(orientationData) {
-            return Ember.Object.create(
+        this.create = function(store, json) {
+            var orientationData = store.createRecord('orientationdata', json.orientationData);
+            orientationData.save();
+
+            json.orientationData = orientationData;
+            json.updated = Date.now();
+            json.cube = Orientation.createCube(json.colour);
+            
+            var device = store.createRecord('device', json);
+            device.save();
+                //device.save();
+
+
+
+
+            /*return Ember.Object.create(
                 {
                     deviceInfo: orientationData.deviceInfo,
                     deviceId: orientationData.deviceId,
@@ -25,13 +39,13 @@ var DeviceService = (function() {
                     updated: Date.now(),
                     cube: Orientation.createCube(orientationData.colour),
                     renderer: undefined,
-                    data: Ember.Object.create({
+                    orientationData: Ember.Object.create({
                         alpha: orientationData.data.alpha,
                         beta: orientationData.data.beta,
                         gamma: orientationData.data.gamma
                     })
                 }
-            );
+            );*/
         };
 
         this.getDeviceDetails = function() {

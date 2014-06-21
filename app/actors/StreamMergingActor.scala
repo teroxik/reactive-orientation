@@ -8,7 +8,7 @@ import play.api.libs.iteratee.Concurrent.Channel
 import utils.DegreesToRadiansConversions
 
 object StreamMergingActor {
-  case class OrientationChangeEvent(deviceInfo: String, deviceId: String, colour: Int, data: OrientationChangeData)
+  case class OrientationChangeEvent(deviceInfo: String, deviceId: String, colour: Int, orientationData: OrientationChangeData)
   case class OrientationChangeData(alpha: Double, beta: Double, gamma: Double)
 }
 

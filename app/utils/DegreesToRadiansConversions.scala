@@ -7,7 +7,7 @@ trait DegreesToRadiansConversions {
 
   def convertDegreesToRadians(event: OrientationChangeEvent) = {
     val dataLens = Lens.lensu[OrientationChangeEvent, OrientationChangeData] (
-      (a, value) => a.copy(data = value), _.data
+      (a, value) => a.copy(orientationData = value), _.orientationData
     )
 
     dataLens mod ((data: OrientationChangeData) =>
