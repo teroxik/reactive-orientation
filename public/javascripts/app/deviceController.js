@@ -1,5 +1,5 @@
 App.DeviceController = Ember.ObjectController.extend({
-    model: {deviceInfo: '', deviceId: '', colour: '', data: {}},
+    model: {deviceInfo: '', id: '', colour: '', data: {}},
     socket: { },
     serverEndpointAddress: "ws://".concat(document.location.host,"/mobileWebSocket"),
     startOn: false,
@@ -11,7 +11,7 @@ App.DeviceController = Ember.ObjectController.extend({
 
         self.model.deviceInfo = JSON.stringify(DeviceService.getDeviceDetails());
         self.model.colour = Colour.stringToColour(self.model.deviceInfo);
-        self.model.deviceId = self.model.deviceInfo.replace(/[^a-zA-Z0-9]+/g,'');
+        self.model.id = self.model.deviceInfo.replace(/[^a-zA-Z0-9]+/g,'');
 
         self.set('deviceColour', '#' + self.model.colour.toString(16));
 
@@ -47,7 +47,7 @@ App.DeviceController = Ember.ObjectController.extend({
 
                     var data = {
                         deviceInfo: self.model.deviceInfo,
-                        deviceId: self.model.deviceId,
+                        id: self.model.id,
                         colour: self.model.colour,
                         orientationData: orientationData
                     };

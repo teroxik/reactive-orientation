@@ -45,21 +45,21 @@
             var self = this;
             var json = JSON.parse(event.data);
 
-            if(self.store.hasRecordForId('device', json.deviceId)) {
-                self.store.find('device', json.deviceId).then(function(device) {
+            if(self.store.hasRecordForId('device', json.id)) {
+                self.store.find('device', json.id).then(function(device) {
                     DeviceService.update(device, json);
 
                     if(!alreadyExists(device.renderer)) {
-                        var canvas = document.getElementById('canvas' + device.deviceId);
+                        var canvas = document.getElementById('canvas' + device.id);
 
                         if(canvasAlreadyRendered(canvas)) {
-                            var renderer = Orientation.createCanvas(device.cube);
+                            var renderer = Orientation.createCanvas(device.get('cube'));
                             device.set('renderer', renderer);
 
                             try {
                                 canvas.appendChild(renderer.domElement)
                             } catch (e) {
-                                self.get('content').removeObject(device);
+                                //self.get('content').removeObject(device);
                             }
                         }
                     }

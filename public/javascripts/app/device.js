@@ -1,5 +1,4 @@
 App.Device = DS.Model.extend({
-  deviceId: DS.attr('string'),
   colour: DS.attr('string'),
   updated: DS.attr('date'),
   cube: DS.attr(),

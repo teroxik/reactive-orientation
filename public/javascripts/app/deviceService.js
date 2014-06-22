@@ -1,17 +1,17 @@
 var DeviceService = (function() {
     var deviceServices = function() {
 
-        this.update = function(item, orientationData) {
+        this.update = function(item, device) {
             item.set('updated', Date.now());
-            item.orientationData.set('alpha', orientationData.data.alpha);
-            item.orientationData.set('beta', orientationData.data.beta);
-            item.orientationData.set('gamma', orientationData.data.gamma);
+            item.get('orientationData').set('alpha', device.orientationData.alpha);
+            item.get('orientationData').set('beta', device.orientationData.beta);
+            item.get('orientationData').set('gamma', device.orientationData.gamma);
 
             Orientation.setObjectQuaternion(
-                item.cube.quaternion,
-                orientationData.data.alpha,
-                orientationData.data.beta,
-                orientationData.data.gamma);
+                item.get('cube').quaternion,
+                device.orientationData.alpha,
+                device.orientationData.beta,
+                device.orientationData.gamma);
 
             return item;
         };
@@ -23,7 +23,7 @@ var DeviceService = (function() {
             json.orientationData = orientationData;
             json.updated = Date.now();
             json.cube = Orientation.createCube(json.colour);
-            
+
             var device = store.createRecord('device', json);
             device.save();
                 //device.save();

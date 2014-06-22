@@ -11,7 +11,3 @@ App.IndexRoute = Ember.Route.extend({
 });
 
 App.ApplicationAdapter = DS.FixtureAdapter.extend();
-
-App.PostSerializer = DS.JSONSerializer.extend({
-  primaryKey: 'deviceId'
-});
