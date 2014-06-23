@@ -1,7 +1,5 @@
 (function() {
     App.IndexController = Ember.ArrayController.extend({
-        appName: 'My First Example',
-        content: Ember.A(),
         serverEndpointAddress: "ws://".concat(document.location.host,"/dashboardWebSocket"),
         socket: {},
 
@@ -21,7 +19,6 @@
             self.socket.onopen = function(event) {
                 console.log("Socket opened");
             }
-
         },
 
         removeUnusedDevicesTimer: function () {
@@ -33,7 +30,7 @@
             Ember.run.later(this, function() {
                 self.store.all('device').forEach(function(device) {
                     if(!deviceDataUpdatedInSeconds(device, 2)) {
-                        //self.get('content').removeObject(device);
+                        device.destroyRecord();
                     }
                 });
 
@@ -53,7 +50,7 @@
                         try {
                             canvas.appendChild(renderer.domElement)
                         } catch (e) {
-                            //self.get('content').removeObject(device);
+                            device.destroyRecord();
                         }
                     }
                 });
@@ -61,14 +58,9 @@
                 DeviceService.create(self.store, json)
             }
 
-            function alreadyExists(obj) {
-                return obj !== undefined;
-            }
-
             function canvasRenderedButNotInitialized(deviceId) {
                 var canvas = document.getElementById('canvas' + deviceId);
-
-                return alreadyExists(canvas) && !canvas.hasChildNodes();
+                return canvas !== undefined && !canvas.hasChildNodes();
             }
         }
     });
