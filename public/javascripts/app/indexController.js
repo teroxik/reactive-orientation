@@ -49,14 +49,13 @@
                 self.store.find('device', json.id).then(function(device) {
                     DeviceService.update(device, json);
 
-                    if(canvasAlreadyRendered(device.id)) {
+                    if(canvasRenderedButNotInitialized(device.id)) {
                         try {
                             canvas.appendChild(renderer.domElement)
                         } catch (e) {
                             //self.get('content').removeObject(device);
                         }
                     }
-
                 });
             } else {
                 DeviceService.create(self.store, json)
@@ -66,8 +65,10 @@
                 return obj !== undefined;
             }
 
-            function canvasAlreadyRendered(deviceId) {
-                return alreadyExists(document.getElementById('canvas' + deviceId));
+            function canvasRenderedButNotInitialized(deviceId) {
+                var canvas = document.getElementById('canvas' + deviceId);
+
+                return alreadyExists(canvas) && !canvas.hasChildNodes();
             }
         }
     });
