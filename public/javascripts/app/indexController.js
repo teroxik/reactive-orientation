@@ -49,20 +49,14 @@
                 self.store.find('device', json.id).then(function(device) {
                     DeviceService.update(device, json);
 
-                    if(!alreadyExists(device.renderer)) {
-                        var canvas = document.getElementById('canvas' + device.id);
-
-                        if(canvasAlreadyRendered(canvas)) {
-                            var renderer = Orientation.createCanvas(device.get('cube'));
-                            device.set('renderer', renderer);
-
-                            try {
-                                canvas.appendChild(renderer.domElement)
-                            } catch (e) {
-                                //self.get('content').removeObject(device);
-                            }
+                    if(canvasAlreadyRendered(device.id)) {
+                        try {
+                            canvas.appendChild(renderer.domElement)
+                        } catch (e) {
+                            //self.get('content').removeObject(device);
                         }
                     }
+
                 });
             } else {
                 DeviceService.create(self.store, json)
@@ -72,8 +66,8 @@
                 return obj !== undefined;
             }
 
-            function canvasAlreadyRendered(canvas) {
-                return alreadyExists(canvas);
+            function canvasAlreadyRendered(deviceId) {
+                return alreadyExists(document.getElementById('canvas' + deviceId));
             }
         }
     });

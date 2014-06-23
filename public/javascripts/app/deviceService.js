@@ -23,6 +23,7 @@ var DeviceService = (function() {
             json.orientationData = orientationData;
             json.updated = Date.now();
             json.cube = Orientation.createCube(json.colour);
+            json.renderer = Orientation.createCanvas(json.cube);
 
             var device = store.createRecord('device', json);
             device.save();
