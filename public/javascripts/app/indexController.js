@@ -60,7 +60,7 @@
 
             function canvasRenderedButNotInitialized(deviceId) {
                 var canvas = document.getElementById('canvas' + deviceId);
-                return canvas !== undefined && !canvas.hasChildNodes();
+                return canvas !== null && !canvas.hasChildNodes();
             }
         }
     });

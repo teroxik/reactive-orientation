@@ -8,16 +8,15 @@
 <div class="padding-left">
     <table class="table">
         <tbody>
-            {{#each }}
+            {{#each model}}
                 <tr>
-                    {{this}}
                     <td width="300px">
-                        Aplha [rad]: {{ orientationdata.alpha }} <br/>
-                        Beta [rad]: {{ orientationdata.beta }}   <br/>
-                        Gamma [rad]:{{ orientationdata.gamma }}  <br/>
+                        Aplha [rad]: {{ orientationData.alpha }} <br/>
+                        Beta [rad]: {{ orientationData.beta }}   <br/>
+                        Gamma [rad]:{{ orientationData.gamma }}  <br/>
                     </td>
                     <td>
-                        <div id="canvas{{unbound deviceId}}" class="canvas">
+                        <div id="canvas{{unbound id}}" class="canvas">
                             <img url="{{unbound canvas}}"/>
                         </div>
                     </td>
