@@ -46,9 +46,11 @@
                 self.store.find('device', json.id).then(function(device) {
                     DeviceService.update(device, json);
 
-                    if(canvasRenderedButNotInitialized(device.id)) {
+                    var canvas = document.getElementById('canvas' + device.id);
+
+                    if(canvas !== null) {
                         try {
-                            canvas.appendChild(renderer.domElement)
+                            canvas.appendChild(device.get('renderer').domElement)
                         } catch (e) {
                             device.destroyRecord();
                         }
@@ -56,11 +58,6 @@
                 });
             } else {
                 DeviceService.create(self.store, json)
-            }
-
-            function canvasRenderedButNotInitialized(deviceId) {
-                var canvas = document.getElementById('canvas' + deviceId);
-                return canvas !== null && !canvas.hasChildNodes();
             }
         }
     });
