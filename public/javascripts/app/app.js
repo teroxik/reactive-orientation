@@ -6,7 +6,7 @@ App.Router.map(function() {
 
 App.IndexRoute = Ember.Route.extend({
   model: function() {
-    return this.store.all('device');
+    return this.store.all('dashboarddevice');
   }
 });
 

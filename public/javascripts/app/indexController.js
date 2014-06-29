@@ -46,8 +46,7 @@
                 self.store.find('dashboarddevice', json.id).then(function(device) {
                     DeviceService.update(device, json);
 
-                    var canvas = document.getElementById('canvas' + device.id);
-
+                    var canvas = document.getElementById('canvas' + device.get('id'));
                     if(canvas !== null) {
                         try {
                             canvas.appendChild(device.get('renderer').domElement)
