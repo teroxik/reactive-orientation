@@ -25,28 +25,8 @@ var DeviceService = (function() {
             json.cube = Orientation.createCube(json.colour);
             json.renderer = Orientation.createCanvas(json.cube);
 
-            var device = store.createRecord('device', json);
+            var device = store.createRecord('dashboarddevice', json);
             device.save();
-                //device.save();
-
-
-
-
-            /*return Ember.Object.create(
-                {
-                    deviceInfo: orientationData.deviceInfo,
-                    deviceId: orientationData.deviceId,
-                    colour: orientationData.colour,
-                    updated: Date.now(),
-                    cube: Orientation.createCube(orientationData.colour),
-                    renderer: undefined,
-                    orientationData: Ember.Object.create({
-                        alpha: orientationData.data.alpha,
-                        beta: orientationData.data.beta,
-                        gamma: orientationData.data.gamma
-                    })
-                }
-            );*/
         };
 
         this.getDeviceDetails = function() {

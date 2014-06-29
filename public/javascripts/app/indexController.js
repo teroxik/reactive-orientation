@@ -28,7 +28,7 @@
 
             var self = this;
             Ember.run.later(this, function() {
-                self.store.all('device').forEach(function(device) {
+                self.store.all('dashboarddevice').forEach(function(device) {
                     if(!deviceDataUpdatedInSeconds(device, 2)) {
                         device.destroyRecord();
                     }
@@ -42,8 +42,8 @@
             var self = this;
             var json = JSON.parse(event.data);
 
-            if(self.store.hasRecordForId('device', json.id)) {
-                self.store.find('device', json.id).then(function(device) {
+            if(self.store.hasRecordForId('dashboarddevice', json.id)) {
+                self.store.find('dashboarddevice', json.id).then(function(device) {
                     DeviceService.update(device, json);
 
                     var canvas = document.getElementById('canvas' + device.id);
