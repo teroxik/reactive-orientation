@@ -2,25 +2,25 @@
     App.DeviceController = Ember.ObjectController.extend({
         model: App.Device.create(),
         socket: { },
-        serverEndpointAddress: "ws://".concat(document.location.host,"/mobileWebSocket"),
+        serverEndpointAddress: 'ws://'.concat(document.location.host,'/mobileWebSocket'),
         startOn: false,
 
         init: function() {
             var self = this;
 
-            self.model.deviceInfo = JSON.stringify(DeviceService.getDeviceDetails());
-            self.model.colour = Colour.stringToColour(self.model.deviceInfo);
-            self.model.id = self.model.deviceInfo.replace(/[^a-zA-Z0-9]+/g,'');
+            self.get('model').set('deviceInfo', JSON.stringify(DeviceService.getDeviceDetails()));
+            self.get('model').set('colour', Colour.stringToColour(self.model.deviceInfo));
+            self.get('model').set('id', self.model.deviceInfo.replace(/[^a-zA-Z0-9]+/g,''));
 
-            self.set("socket", new WebSocket(self.serverEndpointAddress));
+            self.set('socket', new WebSocket(self.serverEndpointAddress));
 
             self.socket.onclose = function(event) {
-                console.log("Socket closed");
+                console.log('Socket closed');
                 self.set("socket",new WebSocket(self.serverEndpointAddress));
             }
 
             self.socket.onopen = function(event) {
-                console.log("Socket opened");
+                console.log('Socket opened');
             }
 
             this.registerListeners();
@@ -40,13 +40,13 @@
             var self = this;
             if(window.DeviceOrientationEvent) {
                 window.addEventListener('deviceorientation', function(event) {
-                    if (self.get("startOn")) {
+                    if (self.get('startOn')) {
                         var orientationData = Orientation.calculateEulerOrientationForDevice(event);
 
                         var data = {
-                            deviceInfo: self.model.deviceInfo,
-                            id: self.model.id,
-                            colour: self.model.colour,
+                            deviceInfo: self.get('model').deviceInfo,
+                            id: self.get('model').id,
+                            colour: self.get('model').colour,
                             orientationData: orientationData
                         };
 
