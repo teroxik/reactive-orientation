@@ -215,19 +215,17 @@
     <h4>Mobile device</h4>
 
     <p>
-        The <a href="#code/public/javascripts/app/deviceController.js">DeviceController</a> has 3 important properties startOn flag saying if the data are being sent, socket which is the websocket object and orientation which represents current set of device’s orientation data. A handlebars template <a href="#code/app/assets/templates/device.handlebars">device.handlebars</a> is used as a view for this controller. Important thing to note here is that Ember controller properties are accessible from the view and Ember automatically binds their state and updates the view when they are changed. Ember also provides set of standard tools for data access called <a href="http://emberjs.com/guides/models/">Ember-data</a>. For sake of simplicity of code and clarity of the intended functionality, the web socket interactions are handled manually in this template.
-        The controllers subscribes to <code>deviceorientation</code> event which triggers every time you move your device. When this happens, the properties of the controller are updated (and therefore the values re-rendered in the view). Html5 provides this api to be able to use data from device's orientation sensors in a browser. It provides values alpha, beta and gamma which represent rotation through angle about axes. The specification can be found at <a href="www.w3.org/TR/orientation-event">www.w3.org</a>. There are some differences between browsers, but method <code>calculateEulerOrientationForDevice</code> in orientation module handles that.
+        The <a href="#code/public/javascripts/app/deviceController.js">DeviceController</a> has a few important properties. StartOn flag says if the data are being sent, socket which is the websocket object, serverEndPointAddress which is the endpoints address and a model which represents current set of device’s orientation data as well as device's identification. A handlebars template <a href="#code/app/assets/templates/device.handlebars">device.handlebars</a> is used as a view for this controller. Important thing to note here is that Ember controller properties are accessible from the view and Ember automatically binds their state and updates the view when they are changed. Ember also provides set of standard tools for data access called <a href="http://emberjs.com/guides/models/">Ember-data</a>. Ember provides a concept of a store which you can use to store your objects.
+        Ember-data allows you to configure an adapter which may be used to automatically get/create/update data in a remote store (for example on a REST endpoint or a websocket) and cache the data in the local store for your use. For sake of simplicity of code and clarity of the intended functionality, the web socket interactions are handled manually in this template. We are using the mentioned store concept for our indexController though.
+
+        The controllers subscribes to <code>deviceorientation</code> event which triggers every time you move your device. When this happens, the properties of the controller are updated (and therefore the values re-rendered in the view). Html5 provides this api to be able to use data from device's orientation sensors in a browser. It provides values alpha, beta and gamma which represent rotation through angle about axes. The specification can be found at <a href="www.w3.org/TR/orientation-event">www.w3.org</a>. There are some differences between browsers, but method <code>calculateEulerOrientationForDevice</code> in orientation module handles that. Notice we are only updating the properties of the model we want to update on the view and they re-render automatically.
     </p>
 
      <pre><code>
-         var orientationData = Orientation.calculateEulerOrientationForDevice(event);
-
-         var data = {
-         deviceInfo: self.model.deviceInfo,
-         deviceId: self.model.deviceId,
-         colour: self.model.colour,
-         data: orientationData
-         };
+         if (self.get('startOn')) {
+             self.get('model').set('orientationData', Orientation.calculateEulerOrientationForDevice(event));
+             self.get('socket').send(JSON.stringify(self.get('model')));
+         }
      </code></pre>
 
     <p>
@@ -241,7 +239,7 @@
     <img src="tutorial/device-landscape.png" alt="Screenshot of device page with actual data.">
 
     <p>
-        We refer to the values by self, because they are properties of the controller to be simply displayed on the device page. Apart from <code>orientationData</code>, they are all static and only change when the page is reloaded. <code>OrientationData</code> on the other hand are calculated with each change of device’s orientation. Device info contains data about the device - model, type, vendor, os or browser and version etc which are retrieved using the <a href="https://github.com/faisalman/ua-parser-js">ua-parser-js project</a>. These informations are used to create unique deviceId and colour by adding a current timestamp and using an appropriate hash function to convert string to colour. These properties are then used to identify the device throughout the application. Uniqueness provided by this approach is sufficient for this template. After that, the data are sent to the Play server’s device web socket.
+        We refer to the values by self, because they are properties of the controller to be simply displayed on the device page. Apart from <code>orientationData</code>, they are all static and only change when the page is reloaded. <code>orientationData</code> on the other hand are calculated with each change of device’s orientation. Device info contains data about the device - model, type, vendor, os or browser and version etc which are retrieved using the <a href="https://github.com/faisalman/ua-parser-js">ua-parser-js project</a>. These information are used to create unique deviceId and colour by adding a current timestamp and using an appropriate hash function to convert string to colour. These properties are then used to identify the device throughout the application. Uniqueness provided by this approach is sufficient for this template. After that, the data are sent to the Play server’s device web socket.
     </p>
 
     <pre><code>
