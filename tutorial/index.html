@@ -253,15 +253,38 @@
     <h4>Dashboard</h4>
 
     <p>
-       The <a href="#code/public/javascripts/app/indexController.js">indexController</a> is a bit more complicated, but still easily understandable. Important thing to note is that it extends ArrayController, which means it can contain array of models instead of just one or none. Content property is initialized to empty array. This array will include list of active devices. <a href="#code/app/assets/templates/index.handlebars">Index.handlebars</a> view is a template for this route. The <code>{{#each}}</code> is used to render the whole array of models stored in controller and their selected properties. Each model also has an empty div called canvas where the orientation data will be visually displayed when available.
-    </p>
-
-    <p>
-        The main idea of this controller is to receive messages with data about orientation from all the connected devices and either add them to the content array (in case the device is not yet present)
+       The <a href="#code/public/javascripts/app/indexController.js">indexController</a> is a bit more complicated, but still easily understandable. Important thing to note is that it extends ArrayController, which means it can contain array of models instead of just one or none.
+       We will be using the Ember store mentioned earlier. The model used for this controller is defined in <a href="#code/public/javascripts/app/app.js"> app.js </a>.
     </p>
 
     <pre><code>
-        self.get('content').pushObject(Device.create(json));
+        App.IndexRoute = Ember.Route.extend({
+            model: function() {
+                return this.store.all('dashboarddevice');
+            }
+        });
+    </code></pre>
+
+    <p>
+       This code snippet retrieves all 'dashboarddevice' records from the store whenever we refer to a model in the controller or its view. Each device is defined in <a href="#code/public/javascripts/app/device.js">device.js</a>.
+    </p>
+
+    <pre><code>
+        App.Dashboarddevice = DS.Model.extend({
+            colour: DS.attr('string'),
+            updated: DS.attr('date'),
+            cube: DS.attr(),
+            renderer: DS.attr(),
+            orientationData: DS.belongsTo('orientationdata')
+        });
+    </code></pre>
+    <p>
+        <a href="#code/app/assets/templates/index.handlebars">Index.handlebars</a> view is a template for this route. The <code> {{#each model}}</code> is used to render the whole array of models stored in the controller and their selected properties. Each rendered model also has an empty div called canvas where the orientation data will be visually displayed when available.
+        The main idea of this controller is to receive messages with data about orientation from all the connected devices and either add them to the store (in case the device is not yet present)
+    </p>
+
+    <pre><code>
+        DeviceService.create(self.store, json)
     </code></pre>
 
     <p>
@@ -269,15 +292,15 @@
     </p>
 
     <pre><code>
-        device = Device.update(item, json);
+        DeviceService.update(device, json);
     </code></pre>
 
     <p>
-        Ember is able to bind and re-render relevant parts of the view even if just values of nested object properties in an array change. This provides sufficient performance for multiple displayed devices. An algorithmically simpler, but less performant solution would be to set the whole content array. We use device property of the message to uniquely identify each device. A timestamp is also saved in <code>Device.update</code> function to mark when were last data from each device received. Inactive devices are periodically scanned by <code>removeUnusedDevicesTimer</code> and removed from the array.
+        Ember is able to bind and re-render relevant parts of the view even if just values of nested object properties in an array change. This provides sufficient performance for multiple displayed devices. We use id property of the message to uniquely identify each device. A timestamp is also saved in <code>Device.update</code> function to mark when were last data from each device received. Inactive devices are periodically scanned by <code>removeUnusedDevicesTimer</code> and removed from the array.
     </p>
 
     <p>
-        The majority of the work described above is done by <code>handleWebSocketReceivedMessage</code> function which is triggered with each received web socket message. The methods to create and update device object are extracted to Device module located in <a href="#code/public/javascripts/app/device.js">device.js</a> file. Notice objects are created using <code>Ember.Object.create()</code> function which takes javascript object as parameter. Property values that are dynamically updated are updated using set method which ensures the values are bound and updated properly.
+        The majority of the work described above is done by <code>handleWebSocketReceivedMessage</code> function which is triggered with each received web socket message. The methods to create and update device object are extracted to Device module located in <a href="#code/public/javascripts/app/device.js">device.js</a> file. Notice objects are created using <code>store.createRecord('dashboarddevice', json)</code> function which takes javascript object as parameter. Property values that are dynamically updated are updated using <code>set</code> which is available on all Ember objects which are defined using <code>DS.Model.extend</code> or <code>DS.Model.extend</code> and ensures the values are bound and updated properly.
     </p>
 
     <img src="tutorial/dashboard.png" >
@@ -286,7 +309,7 @@
     <h2>Graphical representation</h2>
 
     <p>
-        An impressive javascript library <a href="http://threejs.org/">three.js</a> is used for graphical representation of the orientation data. This library aims to provide 3D graphics in a browser. Most of the functionality was extracted to <a href="#code/public/javascripts/app/orientation.js">orientation.js</a> module. It contains functions to initialize the drawing canvas (<code>createCanvas</code>), create objects (<code>createCube</code>), transformations to achieve rotation around world axes (<code>setObjectQuaternion</code>) and extracting device’s orientation data (<code>calculateEulerOrientationForDevice</code>). The canvas is then attached to the DOM (the empty div in <a href="#code/app/assets/templates/index.handlebars">index.handlebars</a>) mentioned earlier in indexController’s <code>handleWebSocketReceivedMessage</code> function.
+        An impressive javascript library <a href="http://threejs.org/">three.js</a> is used for graphical representation of the orientation data. This library aims to provide 3D graphics in a browser. Most of the functionality was extracted to <a href="#code/public/javascripts/app/orientation.js">orientation.js</a> module. It contains functions to initialize the drawing canvas (<code>createCanvas</code>), create objects (<code>createCube</code>), transformations to achieve rotation around world axes (<code>setObjectQuaternion</code>) and extracting device’s orientation data (<code>calculateEulerOrientationForDevice</code>). The canvas is then attached to the DOM (to the empty canvas div in <a href="#code/app/assets/templates/index.handlebars">index.handlebars</a>) mentioned earlier in indexController’s <code>handleWebSocketReceivedMessage</code> function.
     </p>
 
     <pre><code>
@@ -299,7 +322,7 @@
 
     <h4>Three.js</h4>
 
-    <p>The maing WebGL and Three.js objects are </p>
+    <p>The main WebGL and Three.js objects are </p>
 
     <ul>
         <li>renderer - renders the scene using camera</li>
@@ -323,8 +346,6 @@
       We are using a simple cube/box object which is instantiated using the THREE.BoxGeometry class. But it is not enough for displaying it in the scene. We have to specify the object material.
       We chose one of the simplest materials to display boxes with only one colour. For our demo purpose is the box a very nice representation of mobile device (mobile,phone,tablet). The selected colour is passed to the material constructor and our object can be appended to the scene.
     </p>
-
-
 
     <pre><code>
        var scene = new THREE.Scene();
