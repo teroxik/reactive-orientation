@@ -39,6 +39,10 @@
         },
 
         handleWebSocketReceivedMessage: function(event) {
+            function canvasAvailableButNotYetRendered(canvas) {
+                return canvas !== null && canvas.getElementsByTagName('canvas').length == 0;
+            }
+
             var self = this;
             var json = JSON.parse(event.data);
 
@@ -47,7 +51,7 @@
                     DeviceService.update(device, json);
 
                     var canvas = document.getElementById('canvas' + device.get('id'));
-                    if(canvas !== null) {
+                    if(canvasAvailableButNotYetRendered(canvas)) {
                         try {
                             canvas.appendChild(device.get('renderer').domElement)
                         } catch (e) {
