@@ -18,7 +18,7 @@
     <p>
         In the beginning it doesn't look very interesting. But we will get there.
     </p>
-    <img src="tutorial/index.png">
+    <img src="https://raw.githubusercontent.com/teroxik/reactive-orientation/master/tutorial/index.png">
 </div>
 <div>
     <h2>Preview</h2>
@@ -32,7 +32,7 @@
         Main functionality of the Play server is to act as a router for web socket messages. It accepts connections on two different web sockets. The first web socket receives messages with data about spatial orientation from an arbitrary number of mobile devices. Web sockets in combination with orientation data serve as a good descriptive source of data with reasonably high volume and velocity so we can show how these can be handled using the Typesafe platform. The server applies transformation function to each message and merges streams of messages from all devices into a single stream which is in turn sent to the other websocket where the data for each individual device are clearly displayed in real time. This is illustrated on the figure below.
     </p>
 
-    <img src="tutorial/marble.png">
+    <img src="https://raw.githubusercontent.com/teroxik/reactive-orientation/master/tutorial/marble.png">
 
     <h2>Usage</h2>
     <p>
@@ -233,12 +233,12 @@
     <p>
         Screenshot from Nexus 7 tablet in portrait mode before starting the sending process.
     </p>
-    <img src="tutorial/device.png" alt="Screenshot of device page sends data from table">
+    <img src="https://raw.githubusercontent.com/teroxik/reactive-orientation/master/tutorial/device.png" alt="Screenshot of device page sends data from table">
 
     <p>
         Screenshot from Nexus 7 tablet in landscape mode showing the generated color and real-time orientation data.
     </p>
-    <img src="tutorial/device-landscape.png" alt="Screenshot of device page with actual data.">
+    <img src="https://raw.githubusercontent.com/teroxik/reactive-orientation/master/tutorial/device-landscape.png" alt="Screenshot of device page with actual data.">
 
     <p>
         We refer to the values by self, because they are properties of the controller to be simply displayed on the device page. Apart from <code>orientationData</code>, they are all static and only change when the page is reloaded. <code>OrientationData</code> on the other hand are calculated with each change of device’s orientation. Device info contains data about the device - model, type, vendor, os or browser and version etc which are retrieved using the <a href="https://github.com/faisalman/ua-parser-js">ua-parser-js project</a>. These informations are used to create unique deviceId and colour by adding a current timestamp and using an appropriate hash function to convert string to colour. These properties are then used to identify the device throughout the application. Uniqueness provided by this approach is sufficient for this template. After that, the data are sent to the Play server’s device web socket.
@@ -282,7 +282,7 @@
         The majority of the work described above is done by <code>handleWebSocketReceivedMessage</code> function which is triggered with each received web socket message. The methods to create and update device object are extracted to Device module located in <a href="#code/public/javascripts/app/device.js">device.js</a> file. Notice objects are created using <code>Ember.Object.create()</code> function which takes javascript object as parameter. Property values that are dynamically updated are updated using set method which ensures the values are bound and updated properly.
     </p>
 
-    <img src="tutorial/dashboard.png" >
+    <img src="https://raw.githubusercontent.com/teroxik/reactive-orientation/master/tutorial/dashboard.png" >
 </div>
 <div>
     <h2>Graphical representation</h2>
