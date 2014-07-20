@@ -1,7 +1,5 @@
 (function() {
     App.IndexController = Ember.ArrayController.extend({
-        appName: 'My First Example',
-        content: Ember.A(),
         serverEndpointAddress: "ws://".concat(document.location.host,"/dashboardWebSocket"),
         socket: {},
 
@@ -21,7 +19,6 @@
             self.socket.onopen = function(event) {
                 console.log("Socket opened");
             }
-
         },
 
         removeUnusedDevicesTimer: function () {
@@ -31,9 +28,9 @@
 
             var self = this;
             Ember.run.later(this, function() {
-                self.get('content').forEach(function(device) {
+                self.store.all('dashboarddevice').forEach(function(device) {
                     if(!deviceDataUpdatedInSeconds(device, 2)) {
-                        self.get('content').removeObject(device);
+                        device.destroyRecord();
                     }
                 });
 
@@ -42,42 +39,28 @@
         },
 
         handleWebSocketReceivedMessage: function(event) {
+            function canvasAvailableButNotYetRendered(canvas) {
+                return canvas !== null && canvas.getElementsByTagName('canvas').length == 0;
+            }
+
             var self = this;
             var json = JSON.parse(event.data);
 
-            var device = undefined;
+            if(self.store.hasRecordForId('dashboarddevice', json.id)) {
+                self.store.find('dashboarddevice', json.id).then(function(device) {
+                    DeviceService.update(device, json);
 
-            self.get('content').forEach(function(item) {
-                if(item.get('deviceId') === json.deviceId) {
-                    device = Device.update(item, json);
-                }
-            });
-
-            if(!alreadyExists(device)) {
-                self.get('content').pushObject(Device.create(json));
-            }
-
-            if(alreadyExists(device) && !alreadyExists(device.renderer)) {
-                var canvas = document.getElementById('canvas' + device.deviceId);
-
-                if(canvasAlreadyRendered(canvas)) {
-                    var renderer = Orientation.createCanvas(device.cube);
-                    device.set('renderer', renderer);
-
-                    try {
-                        canvas.appendChild(renderer.domElement)
-                    } catch (e) {
-                        self.get('content').removeObject(device);
+                    var canvas = document.getElementById('canvas' + device.get('id'));
+                    if(canvasAvailableButNotYetRendered(canvas)) {
+                        try {
+                            canvas.appendChild(device.get('renderer').domElement)
+                        } catch (e) {
+                            device.destroyRecord();
+                        }
                     }
-                }
-            }
-
-            function alreadyExists(obj) {
-                return obj !== undefined;
-            }
-
-            function canvasAlreadyRendered(canvas) {
-                return alreadyExists(canvas);
+                });
+            } else {
+                DeviceService.create(self.store, json)
             }
         }
     });
