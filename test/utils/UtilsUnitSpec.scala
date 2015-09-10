@@ -32,9 +32,9 @@ class UtilsUnitSpec extends Specification {
 
       val degToRad = (number: Double) => number * 2 * Math.PI / 360
 
-      val alpha = degToRad(input.data.alpha)
-      val beta = degToRad(input.data.beta)
-      val gamma = degToRad(input.data.gamma)
+      val alpha = degToRad(input.orientationData.alpha)
+      val beta = degToRad(input.orientationData.beta)
+      val gamma = degToRad(input.orientationData.gamma)
 
       val expected = OrientationChangeEvent("test","test",5,OrientationChangeData(alpha,beta,gamma))
 
